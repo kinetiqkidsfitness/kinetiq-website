@@ -1,0 +1,17 @@
+{
+  "name": "KinetIQ Coach App",
+  "short_name": "KinetIQ Coach",
+  "description": "Class plans and exercise videos for KinetIQ coaches",
+  "start_url": "./coach.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#FFF5EC",
+  "theme_color": "#133260",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
