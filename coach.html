@@ -189,8 +189,11 @@ const DATA = JSON.parse(document.getElementById('coach-data').textContent);
 // https://youtube.com/watch?v=dQw4w9WgXcQ  ->  "dQw4w9WgXcQ"
 // ---------------------------------------------------------------
 const VIDEO_MAP = {
-  // "Bean Bag Squats": "dQw4w9WgXcQ",
-  // "Fast Feet Ladder": "xxxxxxxxxxx",
+  "Squat Hold Challenge": "xfU9DPUMK18",
+  "Slow Motion Squats": "dNm9NQv3xMU",
+  "Frog Freeze": "fcxlL2KL7nU",
+  "Deep Squat Exploration": "q8wTP02LDE0",
+  "Frog Jumps": "h7unUQ7dO_k",
 };
 
 function normalize(name){
@@ -407,6 +410,7 @@ function renderClass(app, crumb, moduleNum, weekParam){
   // Warm-up
   if (w.warmup && (w.warmup.theme || w.warmup.movement)){
     html += `<div class="section-block"><div class="section-label">Warm-Up</div>`;
+    if (w.warmup.theme) html += videoBlock(w.warmup.theme);
     html += infoCard("Theme", w.warmup.theme);
     html += infoCard("Movement", w.warmup.movement);
     if (w.warmup.cue) html += infoCard("Coach Cue", w.warmup.cue);
