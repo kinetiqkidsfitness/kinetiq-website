@@ -225,7 +225,8 @@ function esc(s){
 function videoBlock(name){
   const id = findVideo(name);
   if (id){
-    return `<div class="video-wrap"><iframe src="https://www.youtube-nocookie.com/embed/${esc(id)}" title="${esc(name)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+    const src = `https://www.youtube-nocookie.com/embed/${esc(id)}?autoplay=1&mute=1&loop=1&playlist=${esc(id)}&controls=1&playsinline=1&rel=0&modestbranding=1`;
+    return `<div class="video-wrap"><iframe src="${src}" title="${esc(name)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
   }
   return `<div class="video-missing"><div class="icon">\u{1F3A5}</div><span>Not filmed yet</span></div>`;
 }
