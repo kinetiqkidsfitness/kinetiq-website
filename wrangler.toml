@@ -1,0 +1,8 @@
+name = "kinetiq-website"
+pages_build_output_dir = "."
+compatibility_date = "2025-01-01"
+
+[[d1_databases]]
+binding = "FIELD_NOTES_DB"
+database_name = "kinetiq-field-notes"
+database_id = "6dd652fd-207b-4445-ae43-db0b1d4f3984"
