@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KinetIQ Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#133260; --blue:#2676BF; --orange:#FF8A3D; --green:#77FF45; --cream:#FFF5EC;
+    --ink:#1E2A3A; --muted:#5B6B7C; --white:#FFFFFF; --line:rgba(19,50,96,.1);
+    --radius-lg:22px; --radius-md:14px; --maxw:900px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{color-scheme:light; background:#FFFFFF;}
+  body{font-family:'Nunito', system-ui, sans-serif; color:var(--ink); background:var(--cream); min-height:100vh;}
+  h1,h2,h3{font-family:'Poppins', system-ui, sans-serif; font-weight:700; color:var(--navy); letter-spacing:-0.01em;}
+  button, select, input{font-family:inherit;}
+
+  header{background:var(--white); border-bottom:1px solid var(--line); padding:16px 20px;}
+  .topbar{max-width:var(--maxw); margin:0 auto; display:flex; align-items:baseline; gap:10px;}
+  .logo{font-family:'Poppins',sans-serif; font-weight:800; font-size:20px; color:var(--navy);}
+  .logo span{color:var(--blue);}
+  .page-name{font-family:'Poppins',sans-serif; font-weight:600; font-size:14px; color:var(--muted);}
+
+  main{max-width:var(--maxw); margin:0 auto; padding:24px 20px 60px;}
+  .eyebrow{font-family:'Poppins',sans-serif; font-weight:700; font-size:12.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--orange); display:flex; align-items:center; gap:6px; margin-bottom:6px;}
+  .eyebrow::before{content:""; width:7px; height:7px; border-radius:50%; background:var(--orange); display:inline-block;}
+  .page-title{font-size:26px; margin-bottom:4px;}
+  .page-sub{color:var(--muted); font-size:14.5px; margin-bottom:22px;}
+
+  .filters{background:var(--white); border:1px solid var(--line); border-radius:var(--radius-lg); padding:16px; margin-bottom:20px; display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  @media (min-width:640px){ .filters{grid-template-columns:repeat(4,1fr);} }
+  .filters select, .filters input{width:100%; font-size:14px; color:var(--ink); background:var(--cream); border:1.5px solid var(--line); border-radius:var(--radius-md); padding:10px 12px;}
+  .filters input{grid-column:1/-1;}
+  @media (min-width:640px){ .filters input{grid-column:auto;} }
+
+  .summary{font-family:'Poppins',sans-serif; font-weight:600; font-size:13.5px; color:var(--muted); margin-bottom:16px;}
+  .summary strong{color:var(--navy);}
+
+  .note-card{background:var(--white); border:1px solid var(--line); border-radius:var(--radius-lg); padding:16px 18px; margin-bottom:12px;}
+  .note-head{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:8px;}
+  .note-context{font-family:'Poppins',sans-serif; font-weight:700; font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--blue); margin-bottom:2px;}
+  .note-exercise{font-family:'Poppins',sans-serif; font-weight:700; font-size:16px; color:var(--navy);}
+  .note-time{font-size:12px; color:var(--muted); white-space:nowrap;}
+  .note-tags{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;}
+  .note-tag{font-family:'Poppins',sans-serif; font-weight:600; font-size:11.5px; color:var(--navy); background:var(--cream); border:1px solid var(--line); border-radius:999px; padding:4px 10px;}
+  .note-text{font-size:14.5px; line-height:1.5; color:var(--ink); white-space:pre-wrap;}
+  .note-text:empty::before{content:"(no note text)"; color:var(--muted); font-style:italic;}
+
+  .empty, .loading, .error{text-align:center; padding:50px 20px; color:var(--muted); font-size:15px;}
+  .error{color:#C0392B;}
+  .refresh-btn{font-family:'Poppins',sans-serif; font-weight:600; font-size:13px; color:var(--navy); background:var(--white); border:1.5px solid var(--line); border-radius:999px; padding:8px 16px; margin-bottom:16px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="topbar">
+    <div class="logo">Kinet<span>IQ</span></div>
+    <div class="page-name">Field Notes</div>
+  </div>
+</header>
+
+<main>
+  <div class="eyebrow">Movement Foundations — Module 1</div>
+  <h1 class="page-title">Field Notes</h1>
+  <p class="page-sub">Everything coaches have logged from class, in one place.</p>
+
+  <div class="filters">
+    <select id="f-lesson"><option value="">All Lessons</option></select>
+    <select id="f-class"><option value="">All Classes</option><option value="A">Class A: Learn</option><option value="B">Class B: Apply</option></select>
+    <select id="f-tag"><option value="">All Tags</option></select>
+    <input id="f-search" type="text" placeholder="Search notes…">
+  </div>
+
+  <button class="refresh-btn" id="refresh-btn">↻ Refresh</button>
+  <div class="summary" id="summary"></div>
+  <div id="list"><div class="loading">Loading field notes…</div></div>
+</main>
+
+<script>
+const LESSON_NAMES = {
+  1: "Squat", 2: "Push", 3: "Hinge", 4: "Pull",
+  5: "Lunge", 6: "Rotate", 7: "Carry", 8: "Movement IQ Showcase Week"
+};
+const ALL_TAGS = ["Worked Well", "Kids Enjoyed", "Too Difficult", "Too Easy", "Confusing Instructions", "Needs More Time", "Low Engagement", "Safety Concern"];
+
+let allNotes = [];
+
+function esc(s){
+  const d = document.createElement('div');
+  d.textContent = s == null ? "" : s;
+  return d.innerHTML;
+}
+
+function formatDate(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) +
+    ' · ' + d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+}
+
+function populateFilters(){
+  const lessonSel = document.getElementById('f-lesson');
+  for (let i = 1; i <= 8; i++){
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = `Lesson ${i}: ${LESSON_NAMES[i]}`;
+    lessonSel.appendChild(opt);
+  }
+  const tagSel = document.getElementById('f-tag');
+  ALL_TAGS.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t;
+    opt.textContent = t;
+    tagSel.appendChild(opt);
+  });
+}
+
+function renderList(){
+  const lesson = document.getElementById('f-lesson').value;
+  const cls = document.getElementById('f-class').value;
+  const tag = document.getElementById('f-tag').value;
+  const search = document.getElementById('f-search').value.trim().toLowerCase();
+
+  const filtered = allNotes.filter(n => {
+    if (lesson && String(n.lesson_number) !== lesson) return false;
+    if (cls && n.class_letter !== cls) return false;
+    if (tag && !n.tags.includes(tag)) return false;
+    if (search && !(n.note.toLowerCase().includes(search) || n.exercise.toLowerCase().includes(search))) return false;
+    return true;
+  });
+
+  document.getElementById('summary').innerHTML = `<strong>${filtered.length}</strong> of ${allNotes.length} note${allNotes.length === 1 ? '' : 's'}`;
+
+  const list = document.getElementById('list');
+  if (!filtered.length){
+    list.innerHTML = `<div class="empty">No field notes match these filters yet.</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(n => `
+    <div class="note-card">
+      <div class="note-head">
+        <div>
+          <div class="note-context">Lesson ${esc(n.lesson_number)}: ${esc(n.lesson_name)} — Class ${esc(n.class_letter)}</div>
+          <div class="note-exercise">${esc(n.exercise)}</div>
+        </div>
+        <div class="note-time">${formatDate(n.created_at)}</div>
+      </div>
+      ${n.tags.length ? `<div class="note-tags">${n.tags.map(t => `<span class="note-tag">${esc(t)}</span>`).join("")}</div>` : ""}
+      <div class="note-text">${esc(n.note)}</div>
+    </div>`).join("");
+}
+
+async function loadNotes(){
+  const list = document.getElementById('list');
+  list.innerHTML = `<div class="loading">Loading field notes…</div>`;
+  try {
+    const res = await fetch('/api/field-notes?module=1');
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to load.');
+    allNotes = data.notes || [];
+    renderList();
+  } catch (err) {
+    list.innerHTML = `<div class="error">Couldn't load field notes. Check your connection and try refreshing.</div>`;
+  }
+}
+
+populateFilters();
+document.getElementById('f-lesson').addEventListener('change', renderList);
+document.getElementById('f-class').addEventListener('change', renderList);
+document.getElementById('f-tag').addEventListener('change', renderList);
+document.getElementById('f-search').addEventListener('input', renderList);
+document.getElementById('refresh-btn').addEventListener('click', loadNotes);
+
+loadNotes();
+</script>
+</body>
+</html>
