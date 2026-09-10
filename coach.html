@@ -157,6 +157,23 @@
   .vocab-word{display:block; font-family:'Poppins',sans-serif; font-weight:700; font-size:14px; color:var(--navy); margin-bottom:2px;}
   .vocab-def{display:block; font-size:13.5px; color:var(--muted); line-height:1.45;}
 
+  .field-notes-card{background:var(--white); border:1px solid var(--line); border-radius:var(--radius-lg); padding:18px;}
+  .field-notes-field{margin-bottom:14px;}
+  .field-notes-field:last-of-type{margin-bottom:0;}
+  .field-notes-label{font-family:'Poppins',sans-serif; font-weight:700; font-size:12px; color:var(--blue); text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; display:block;}
+  .field-notes-select{width:100%; font-family:'Nunito',sans-serif; font-size:15px; color:var(--ink); background:var(--cream); border:1.5px solid var(--line); border-radius:var(--radius-md); padding:12px 14px;}
+  .field-notes-tags{display:flex; flex-wrap:wrap; gap:8px;}
+  .tag-chip{font-family:'Poppins',sans-serif; font-weight:600; font-size:13px; color:var(--navy); background:var(--cream); border:1.5px solid var(--line); border-radius:999px; padding:8px 14px; transition:transform .2s cubic-bezier(.34,1.56,.64,1), background .15s, border-color .15s, color .15s;}
+  .tag-chip:active{transform:scale(.94);}
+  .tag-chip.active{background:var(--navy); border-color:var(--navy); color:var(--white);}
+  .field-notes-textarea{width:100%; font-family:'Nunito',sans-serif; font-size:15px; color:var(--ink); background:var(--cream); border:1.5px solid var(--line); border-radius:var(--radius-md); padding:12px 14px; min-height:90px; resize:vertical;}
+  .field-notes-submit{width:100%; font-family:'Poppins',sans-serif; font-weight:700; font-size:14.5px; color:var(--white); background:var(--navy); border:none; border-radius:999px; padding:13px 18px; margin-top:14px; transition:transform .2s cubic-bezier(.34,1.56,.64,1), background .15s;}
+  .field-notes-submit:active{transform:scale(.97);}
+  .field-notes-submit:disabled{opacity:.6;}
+  .field-notes-status{font-family:'Poppins',sans-serif; font-weight:600; font-size:13px; margin-top:10px; text-align:center; min-height:16px;}
+  .field-notes-status.success{color:var(--navy);}
+  .field-notes-status.error{color:#C0392B;}
+
   .back-btn{
     display:inline-flex; align-items:center; gap:6px; font-family:'Poppins',sans-serif; font-weight:600; font-size:13.5px;
     color:var(--navy); background:var(--white); border:1.5px solid var(--line); border-radius:999px; padding:9px 16px; margin-bottom:16px;
@@ -401,6 +418,90 @@ function infoCard(label, value){
 function infoListCard(label, items){
   if (!items || !items.length) return "";
   return `<div class="info-card"><div class="k">${esc(label)}</div><div class="v"><ul>${items.map(i => `<li>${esc(i)}</li>`).join("")}</ul></div></div>`;
+}
+
+const FIELD_NOTE_TAGS = ["Worked Well", "Kids Enjoyed", "Too Difficult", "Too Easy", "Confusing Instructions", "Needs More Time", "Low Engagement", "Safety Concern"];
+
+function fieldNotesBlock(moduleNum, lessonNum, lessonName, classLetter, w){
+  const names = [];
+  if (w.warmup && w.warmup.theme) names.push(w.warmup.theme);
+  (w.circuit || []).forEach(ex => names.push(ex.exercise));
+  if (w.coolDown && w.coolDown.theme) names.push(w.coolDown.theme);
+  const uniqueNames = [...new Set(names)];
+  const options = uniqueNames.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join("");
+  const tagButtons = FIELD_NOTE_TAGS.map(t => `<button type="button" class="tag-chip" onclick="this.classList.toggle('active')">${esc(t)}</button>`).join("");
+  const formId = `fn-${moduleNum}-${lessonNum}-${classLetter}`;
+
+  return `
+    <div class="section-block">
+      <div class="section-label">Field Notes</div>
+      <div class="field-notes-card" id="${formId}" data-module="${moduleNum}" data-lesson="${lessonNum}" data-lesson-name="${esc(lessonName)}" data-class="${classLetter}">
+        <div class="field-notes-field">
+          <label class="field-notes-label">Exercise</label>
+          <select class="field-notes-select">${options}</select>
+        </div>
+        <div class="field-notes-field">
+          <span class="field-notes-label">Tags</span>
+          <div class="field-notes-tags">${tagButtons}</div>
+        </div>
+        <div class="field-notes-field">
+          <label class="field-notes-label">Notes</label>
+          <textarea class="field-notes-textarea" placeholder="What happened? What would you change?"></textarea>
+        </div>
+        <button type="button" class="field-notes-submit" onclick="submitFieldNote('${formId}')">Save Field Note</button>
+        <div class="field-notes-status" data-status></div>
+      </div>
+    </div>`;
+}
+
+async function submitFieldNote(formId){
+  const card = document.getElementById(formId);
+  const select = card.querySelector('.field-notes-select');
+  const tags = [...card.querySelectorAll('.tag-chip.active')].map(b => b.textContent);
+  const textarea = card.querySelector('.field-notes-textarea');
+  const status = card.querySelector('[data-status]');
+  const submitBtn = card.querySelector('.field-notes-submit');
+  const note = textarea.value.trim();
+
+  if (!tags.length && !note){
+    status.textContent = "Add at least a tag or a note.";
+    status.className = "field-notes-status error";
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Saving…";
+  status.textContent = "";
+  status.className = "field-notes-status";
+
+  try {
+    const res = await fetch('/api/field-notes', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        moduleNumber: parseInt(card.dataset.module, 10),
+        lessonNumber: parseInt(card.dataset.lesson, 10),
+        lessonName: card.dataset.lessonName,
+        classLetter: card.dataset.class,
+        exercise: select.value,
+        tags,
+        note
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Something went wrong.");
+
+    status.textContent = "Saved. Thank you!";
+    status.className = "field-notes-status success";
+    textarea.value = "";
+    card.querySelectorAll('.tag-chip.active').forEach(b => b.classList.remove('active'));
+  } catch (err) {
+    status.textContent = "Couldn't save — check your connection and try again.";
+    status.className = "field-notes-status error";
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Save Field Note";
+  }
 }
 
 function healthyHabitsLessonBlock(lesson){
@@ -685,6 +786,9 @@ function renderLessonClass(app, crumb, moduleNum, lessonParam, classLetter){
   if (w.healthyHabitsLesson){
     html += healthyHabitsLessonBlock(w.healthyHabitsLesson);
   }
+
+  // Field Notes
+  html += fieldNotesBlock(moduleNum, lessonNum, l.name, classLetter === "B" ? "B" : "A", w);
 
   html += `<button class="back-btn" onclick="navigate('module/${moduleNum}/lesson/${lessonNum}')">\u2039 Back to ${esc(l.name)}</button>`;
 
