@@ -182,9 +182,51 @@
   .back-btn:active{background:var(--cream); transform:scale(.95); transition-duration:.1s;}
 
   .empty{text-align:center; padding:60px 20px; color:var(--muted);}
+  .error-text{color:#C0392B; font-family:'Poppins',sans-serif; font-weight:600; font-size:13.5px; padding:14px; text-align:center;}
+  .loading-inline{color:var(--muted); font-family:'Poppins',sans-serif; font-weight:600; font-size:13.5px; padding:14px; text-align:center;}
+
+  /* ---- Student Progress Tracker ---- */
+  .student-card{background:var(--white); border:1px solid var(--line); border-radius:var(--radius-lg); margin-bottom:12px; overflow:hidden;}
+  .student-card-head{width:100%; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px 16px; text-align:left; flex-wrap:wrap;}
+  .student-card-name{font-family:'Poppins',sans-serif; font-weight:700; font-size:15px; color:var(--ink);}
+  .student-card-meta{display:flex; gap:6px; flex-wrap:wrap;}
+  .student-status-badge{font-family:'Poppins',sans-serif; font-weight:600; font-size:11px; color:var(--muted); background:var(--cream); border-radius:999px; padding:4px 10px; white-space:nowrap;}
+  .student-status-badge.saved{color:var(--navy); background:rgba(119,255,69,.35);}
+  .student-status-badge.unsaved{color:#C0392B; background:rgba(192,57,43,.1);}
+  .student-card-body{padding:0 16px 16px;}
+
+  .attendance-selector{display:flex; flex-wrap:wrap; gap:8px;}
+  .attendance-btn{font-family:'Poppins',sans-serif; font-weight:600; font-size:13px; color:var(--navy); background:var(--cream); border:1.5px solid var(--line); border-radius:999px; padding:8px 14px; transition:transform .2s cubic-bezier(.34,1.56,.64,1), background .15s, border-color .15s, color .15s;}
+  .attendance-btn:active{transform:scale(.94);}
+  .attendance-btn.selected{background:var(--navy); border-color:var(--navy); color:var(--white);}
+
+  .ratings-block{margin-top:14px; display:flex; flex-direction:column; gap:16px;}
+  .rating-row-label{display:flex; align-items:center; gap:6px; font-family:'Poppins',sans-serif; font-weight:700; font-size:12.5px; color:var(--blue); text-transform:uppercase; letter-spacing:.03em; margin-bottom:8px;}
+  .info-icon{width:18px; height:18px; border-radius:50%; background:var(--line); color:var(--navy); font-family:'Poppins',sans-serif; font-weight:700; font-size:11px; font-style:italic; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .rating-buttons{display:flex; flex-wrap:wrap; gap:6px;}
+  .rating-btn{width:34px; height:34px; border-radius:10px; font-family:'Poppins',sans-serif; font-weight:700; font-size:13.5px; color:var(--white); border:2px solid transparent; opacity:.55; transition:transform .2s cubic-bezier(.34,1.56,.64,1), opacity .15s, border-color .15s;}
+  .rating-btn:active{transform:scale(.9);}
+  .rating-btn.selected{opacity:1; border-color:var(--navy); transform:scale(1.06);}
+  .rating-btn.r-1-2{background:#D64541;}
+  .rating-btn.r-3-4{background:#FF8A3D;}
+  .rating-btn.r-5-6{background:#E8C547;}
+  .rating-btn.r-7-8{background:#9BE06E;}
+  .rating-btn.r-9-10{background:#3F9142;}
+  .rating-btn.rating-btn-no{background:var(--muted); width:auto; padding:0 10px; font-size:11.5px;}
+
+  .tracker-submit-bar{position:sticky; bottom:0; background:var(--cream); padding:14px 0 4px; margin-top:10px; border-top:1px solid var(--line);}
+
+  .rating-guidance-overlay{display:none; position:fixed; inset:0; background:rgba(19,50,96,.45); z-index:50; align-items:flex-end; justify-content:center;}
+  .rating-guidance-overlay.open{display:flex;}
+  .rating-guidance-panel{background:var(--white); border-radius:var(--radius-lg) var(--radius-lg) 0 0; padding:22px 20px 28px; width:100%; max-width:var(--maxw); max-height:70vh; overflow-y:auto;}
+  .rating-guidance-title{font-family:'Poppins',sans-serif; font-weight:700; font-size:17px; color:var(--navy); margin-bottom:12px;}
+  .rating-guidance-body p{font-size:14px; line-height:1.5; margin-bottom:10px;}
+  .rating-guidance-body strong{color:var(--blue);}
 
   @media (min-width:640px){
     .module-grid{grid-template-columns:1fr 1fr 1fr;}
+    .rating-guidance-overlay{align-items:center;}
+    .rating-guidance-panel{border-radius:var(--radius-lg); max-height:80vh;}
   }
 </style>
 </head>
@@ -563,6 +605,23 @@ function navigate(hash){
   location.hash = hash;
 }
 
+// ---------------- SECTIONS REGISTRY ----------------
+// Add a new top-level section by adding an entry here plus its own
+// render function(s) and a dispatch branch in render() below. Existing
+// sections' code and routes are never touched by adding a new one.
+const SECTIONS = [
+  {
+    id: "curriculum",
+    title: "Curriculum",
+    description: "Every module, lesson, and video in one place.",
+  },
+  {
+    id: "tracker",
+    title: "Student Progress Tracker",
+    description: "Score classes and track each child's progress.",
+  },
+];
+
 function render(){
   const parts = parseHash();
   const app = document.getElementById('app');
@@ -576,6 +635,10 @@ function render(){
     renderClass(app, crumb, parseInt(parts[1]), parts[3]);
   } else if (parts[0] === "module"){
     renderWeeks(app, crumb, parseInt(parts[1]));
+  } else if (parts[0] === "curriculum"){
+    renderCurriculumHome(app, crumb);
+  } else if (parts[0] === "tracker"){
+    renderTrackerRoute(app, crumb, parts);
   } else {
     renderHome(app, crumb);
   }
@@ -584,6 +647,24 @@ function render(){
 
 function renderHome(app, crumb){
   crumb.innerHTML = "";
+  const cards = SECTIONS.map(s => `
+    <button class="module-card" onclick="navigate('${s.id}')">
+      <h3>${esc(s.title)}</h3>
+      <div class="module-progress">${esc(s.description)}</div>
+    </button>`).join("");
+
+  app.innerHTML = `
+    <div class="eyebrow">Coach App</div>
+    <h1 class="page-title">Pick a section</h1>
+    <p class="page-sub">Everything you need to run a class and track your students.</p>
+    <div class="module-grid">${cards}</div>
+  `;
+}
+
+function renderCurriculumHome(app, crumb){
+  crumb.innerHTML = `
+    <button onclick="navigate('')">Home</button>
+  `;
   const cards = DATA.modules.map(m => {
     const { total, filmed } = m.lessons ? countVideosLessons(m.lessons) : countVideos(m.weeks);
     const pct = total ? Math.round((filmed/total)*100) : 0;
@@ -597,7 +678,7 @@ function renderHome(app, crumb){
   }).join("");
 
   app.innerHTML = `
-    <div class="eyebrow">Coach App</div>
+    <div class="eyebrow">Curriculum</div>
     <h1 class="page-title">Pick a module</h1>
     <p class="page-sub">Every class, every exercise, every video in one place.</p>
     <div class="module-grid">${cards}</div>
@@ -610,7 +691,9 @@ function renderWeeks(app, crumb, moduleNum){
   if (m.lessons){ renderLessons(app, crumb, moduleNum, m); return; }
 
   crumb.innerHTML = `
-    <button onclick="navigate('')">Modules</button>
+    <button onclick="navigate('')">Home</button>
+    <span class="sep">/</span>
+    <button onclick="navigate('curriculum')">Modules</button>
     <span class="sep">/</span>
     <span class="current">${esc(m.title)}</span>
   `;
@@ -651,7 +734,9 @@ function renderWeeks(app, crumb, moduleNum){
 
 function renderLessons(app, crumb, moduleNum, m){
   crumb.innerHTML = `
-    <button onclick="navigate('')">Modules</button>
+    <button onclick="navigate('')">Home</button>
+    <span class="sep">/</span>
+    <button onclick="navigate('curriculum')">Modules</button>
     <span class="sep">/</span>
     <span class="current">${esc(m.title)}</span>
   `;
@@ -693,7 +778,9 @@ function renderClassPicker(app, crumb, moduleNum, lessonParam){
   if (!l){ app.innerHTML = `<div class="empty">Lesson not found.</div>`; return; }
 
   crumb.innerHTML = `
-    <button onclick="navigate('')">Modules</button>
+    <button onclick="navigate('')">Home</button>
+    <span class="sep">/</span>
+    <button onclick="navigate('curriculum')">Modules</button>
     <span class="sep">/</span>
     <button onclick="navigate('module/${moduleNum}')">${esc(m.title)}</button>
     <span class="sep">/</span>
@@ -728,7 +815,9 @@ function renderLessonClass(app, crumb, moduleNum, lessonParam, classLetter){
   if (!w){ app.innerHTML = `<div class="empty">Class not found.</div>`; return; }
 
   crumb.innerHTML = `
-    <button onclick="navigate('')">Modules</button>
+    <button onclick="navigate('')">Home</button>
+    <span class="sep">/</span>
+    <button onclick="navigate('curriculum')">Modules</button>
     <span class="sep">/</span>
     <button onclick="navigate('module/${moduleNum}')">${esc(m.title)}</button>
     <span class="sep">/</span>
@@ -805,7 +894,9 @@ function renderClass(app, crumb, moduleNum, weekParam){
   if (!w){ app.innerHTML = `<div class="empty">Class not found.</div>`; return; }
 
   crumb.innerHTML = `
-    <button onclick="navigate('')">Modules</button>
+    <button onclick="navigate('')">Home</button>
+    <span class="sep">/</span>
+    <button onclick="navigate('curriculum')">Modules</button>
     <span class="sep">/</span>
     <button onclick="navigate('module/${moduleNum}')">${esc(m.title)}</button>
     <span class="sep">/</span>
@@ -893,6 +984,725 @@ function renderClass(app, crumb, moduleNum, weekParam){
 
   app.innerHTML = html;
 }
+
+// ================== STUDENT PROGRESS TRACKER ==================
+
+const RATING_CATEGORIES = [
+  {
+    key: "skillCompetency",
+    label: "Skill Competency",
+    hint: "The featured movement skill for this class",
+    guidance: [
+      ["1–2", "Unable to complete the movement safely, even with substantial guidance"],
+      ["3–4", "Completes portions with frequent demonstrations and corrections"],
+      ["5–6", "Completes the basic movement with occasional cues"],
+      ["7–8", "Completes the movement independently with good control"],
+      ["9–10", "Performs consistently and applies it successfully in different activities"],
+    ],
+  },
+  {
+    key: "confidence",
+    label: "Confidence",
+    guidance: [
+      ["1–2", "Avoids participation or needs continuous reassurance"],
+      ["3–4", "Attempts activities after significant encouragement"],
+      ["5–6", "Participates but hesitates with unfamiliar or challenging tasks"],
+      ["7–8", "Willingly attempts new activities and retries after difficulty"],
+      ["9–10", "Participates independently, embraces challenges, and confidently demonstrates"],
+    ],
+  },
+  {
+    key: "balanceControl",
+    label: "Balance & Body Control",
+    guidance: [
+      ["1–2", "Frequently loses position and requires physical assistance"],
+      ["3–4", "Maintains control briefly with frequent reminders"],
+      ["5–6", "Demonstrates developing control with occasional instability"],
+      ["7–8", "Maintains balance and controls speed, direction, and body position"],
+      ["9–10", "Demonstrates consistent control across changing or complex activities"],
+    ],
+  },
+  {
+    key: "focusDirections",
+    label: "Focus & Following Directions",
+    guidance: [
+      ["1–2", "Rarely responds to instructions or safety cues"],
+      ["3–4", "Requires frequent redirection and repeated instructions"],
+      ["5–6", "Follows most instructions with occasional reminders"],
+      ["7–8", "Listens, follows directions, and transitions independently"],
+      ["9–10", "Consistently applies instructions and coaching feedback immediately"],
+    ],
+  },
+  {
+    key: "effortResilience",
+    label: "Effort & Resilience",
+    guidance: [
+      ["1–2", "Rarely attempts or stops immediately when challenged"],
+      ["3–4", "Participates with substantial encouragement"],
+      ["5–6", "Gives reasonable effort but may need help continuing"],
+      ["7–8", "Works consistently and retries after mistakes"],
+      ["9–10", "Sustains strong effort, seeks solutions, and persists independently"],
+    ],
+  },
+];
+
+const UNIVERSAL_SCALE = [
+  ["1–2", "Requires full support"],
+  ["3–4", "Requires frequent support"],
+  ["5–6", "Developing with occasional support"],
+  ["7–8", "Demonstrates independently"],
+  ["9–10", "Demonstrates consistently and applies confidently"],
+  ["N/O", "Not observed sufficiently during this class"],
+];
+
+const ATTENDANCE_OPTIONS = [
+  { key: "present", label: "Present" },
+  { key: "absent", label: "Absent" },
+  { key: "late", label: "Late" },
+  { key: "left_early", label: "Left Early" },
+];
+
+function ratingColorClass(n){
+  if (n <= 2) return "r-1-2";
+  if (n <= 4) return "r-3-4";
+  if (n <= 6) return "r-5-6";
+  if (n <= 8) return "r-7-8";
+  return "r-9-10";
+}
+
+async function fetchJSON(url, opts){
+  const res = await fetch(url, opts);
+  let data;
+  try { data = await res.json(); } catch { data = {}; }
+  if (!res.ok) throw Object.assign(new Error(data.error || "Request failed"), { data, status: res.status });
+  return data;
+}
+
+// Lightweight "who is entering this data" identity, stored on-device.
+// This is a data-provenance field, not an access-control mechanism —
+// real login (Cloudflare Access) gates who can reach this section at all.
+function getCurrentCoach(){
+  try { return JSON.parse(localStorage.getItem('kinetiq_current_coach') || 'null'); } catch { return null; }
+}
+function setCurrentCoach(coach){
+  try { localStorage.setItem('kinetiq_current_coach', JSON.stringify(coach)); } catch {}
+}
+
+function trackerCrumb(extra){
+  return `
+    <button onclick="navigate('')">Home</button>
+    <span class="sep">/</span>
+    <button onclick="navigate('tracker')">Student Progress Tracker</button>
+    ${extra || ""}
+  `;
+}
+
+function renderTrackerRoute(app, crumb, parts){
+  // parts[0] === "tracker"
+  if (parts.length === 1){
+    renderTrackerHome(app, crumb);
+  } else if (parts[1] === "new-session"){
+    renderNewSession(app, crumb);
+  } else if (parts[1] === "session" && parts[2]){
+    renderTrackerSession(app, crumb, parts[2]);
+  } else if (parts[1] === "sessions"){
+    renderSessionHistory(app, crumb);
+  } else if (parts[1] === "students"){
+    renderRosterManager(app, crumb, "students");
+  } else if (parts[1] === "coaches"){
+    renderRosterManager(app, crumb, "coaches");
+  } else if (parts[1] === "locations"){
+    renderRosterManager(app, crumb, "locations");
+  } else {
+    app.innerHTML = `<div class="empty">Page not found.</div>`;
+  }
+}
+
+function renderTrackerHome(app, crumb){
+  crumb.innerHTML = trackerCrumb();
+  const coach = getCurrentCoach();
+  app.innerHTML = `
+    <div class="eyebrow">Student Progress Tracker</div>
+    <h1 class="page-title">Student Progress Tracker</h1>
+    <p class="page-sub">${coach ? `Signed in as <strong>${esc(coach.name)}</strong>.` : "Score classes and track each child's progress."}</p>
+    <div class="week-list">
+      <button class="week-row" onclick="navigate('tracker/new-session')">
+        <div class="week-badge">＋</div>
+        <div class="week-info"><h3>New Class Session</h3><p>Check in and score today's class</p></div>
+        <div class="week-arrow">›</div>
+      </button>
+      <button class="week-row" onclick="navigate('tracker/sessions')">
+        <div class="week-badge">≡</div>
+        <div class="week-info"><h3>Session History</h3><p>Resume drafts, review or edit past classes</p></div>
+        <div class="week-arrow">›</div>
+      </button>
+      <button class="week-row" onclick="navigate('tracker/students')">
+        <div class="week-badge">🧒</div>
+        <div class="week-info"><h3>Manage Students</h3><p>Add or view the student roster</p></div>
+        <div class="week-arrow">›</div>
+      </button>
+      <button class="week-row" onclick="navigate('tracker/coaches')">
+        <div class="week-badge">C</div>
+        <div class="week-info"><h3>Manage Coaches</h3><p>Add coaches who can score classes</p></div>
+        <div class="week-arrow">›</div>
+      </button>
+      <button class="week-row" onclick="navigate('tracker/locations')">
+        <div class="week-badge">L</div>
+        <div class="week-info"><h3>Manage Locations</h3><p>Add class locations</p></div>
+        <div class="week-arrow">›</div>
+      </button>
+    </div>
+  `;
+}
+
+// ---- Generic simple roster manager (students / coaches / locations) ----
+const ROSTER_CONFIG = {
+  students: { title: "Students", singular: "Student", endpoint: "/api/tracker/students", listKey: "students", hasAgeGroup: true },
+  coaches: { title: "Coaches", singular: "Coach", endpoint: "/api/tracker/coaches", listKey: "coaches", hasAgeGroup: false },
+  locations: { title: "Locations", singular: "Location", endpoint: "/api/tracker/locations", listKey: "locations", hasAgeGroup: false },
+};
+
+async function renderRosterManager(app, crumb, entityType){
+  const cfg = ROSTER_CONFIG[entityType];
+  crumb.innerHTML = trackerCrumb(`<span class="sep">/</span><span class="current">${esc(cfg.title)}</span>`);
+  app.innerHTML = `
+    <div class="eyebrow">Student Progress Tracker</div>
+    <h1 class="page-title">${esc(cfg.title)}</h1>
+    <div class="section-block">
+      <div class="field-notes-card">
+        <div class="field-notes-field">
+          <label class="field-notes-label">${esc(cfg.singular)} Name</label>
+          <input type="text" class="field-notes-select" id="roster-name-input" placeholder="Full name">
+        </div>
+        ${cfg.hasAgeGroup ? `
+        <div class="field-notes-field">
+          <label class="field-notes-label">Age Group (optional)</label>
+          <input type="text" class="field-notes-select" id="roster-agegroup-input" placeholder="e.g. 5-7">
+        </div>` : ""}
+        <button type="button" class="field-notes-submit" onclick="addRosterEntry('${entityType}')">Add ${esc(cfg.singular)}</button>
+        <div class="field-notes-status" id="roster-status"></div>
+      </div>
+    </div>
+    <div class="section-block">
+      <div class="section-label">Current ${esc(cfg.title)}</div>
+      <div id="roster-list"><div class="loading-inline">Loading…</div></div>
+    </div>
+  `;
+  await loadRosterList(entityType);
+}
+
+async function loadRosterList(entityType){
+  const cfg = ROSTER_CONFIG[entityType];
+  const list = document.getElementById('roster-list');
+  try {
+    const data = await fetchJSON(cfg.endpoint);
+    const items = data[cfg.listKey] || [];
+    if (!items.length){
+      list.innerHTML = `<div class="empty">No ${cfg.title.toLowerCase()} yet — add the first one above.</div>`;
+      return;
+    }
+    list.innerHTML = items.map(it => `
+      <div class="info-card">
+        <div class="v">${esc(it.name)}${it.age_group ? ` <span style="color:var(--muted)">· ${esc(it.age_group)}</span>` : ""}</div>
+      </div>`).join("");
+  } catch (err) {
+    list.innerHTML = `<div class="error-text">Couldn't load ${cfg.title.toLowerCase()}. ${esc(err.message)}</div>`;
+  }
+}
+
+async function addRosterEntry(entityType){
+  const cfg = ROSTER_CONFIG[entityType];
+  const nameInput = document.getElementById('roster-name-input');
+  const ageInput = document.getElementById('roster-agegroup-input');
+  const status = document.getElementById('roster-status');
+  const name = nameInput.value.trim();
+  if (!name){
+    status.textContent = "Enter a name first.";
+    status.className = "field-notes-status error";
+    return;
+  }
+  try {
+    await fetchJSON(cfg.endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, ageGroup: ageInput ? ageInput.value.trim() : undefined }),
+    });
+    nameInput.value = "";
+    if (ageInput) ageInput.value = "";
+    status.textContent = "Added.";
+    status.className = "field-notes-status success";
+    await loadRosterList(entityType);
+  } catch (err) {
+    status.textContent = err.message || "Couldn't save.";
+    status.className = "field-notes-status error";
+  }
+}
+
+// ---- New Class Session ----
+async function renderNewSession(app, crumb){
+  crumb.innerHTML = trackerCrumb(`<span class="sep">/</span><span class="current">New Session</span>`);
+
+  const mod1 = DATA.modules.find(m => m.number === 1);
+  const lessonOptions = mod1.lessons.map(l => `<option value="${l.number}">Lesson ${l.number}: ${esc(l.name)}</option>`).join("");
+
+  app.innerHTML = `
+    <div class="eyebrow">Student Progress Tracker</div>
+    <h1 class="page-title">New Class Session</h1>
+    <div class="section-block">
+      <div class="field-notes-card">
+        <div class="field-notes-field">
+          <label class="field-notes-label">Date</label>
+          <input type="date" class="field-notes-select" id="ns-date">
+        </div>
+        <div class="field-notes-field">
+          <label class="field-notes-label">Start Time</label>
+          <input type="time" class="field-notes-select" id="ns-time">
+        </div>
+        <div class="field-notes-field">
+          <label class="field-notes-label">Lesson</label>
+          <select class="field-notes-select" id="ns-lesson" onchange="onNewSessionLessonChange()">${lessonOptions}</select>
+        </div>
+        <div class="field-notes-field">
+          <label class="field-notes-label">Class Type</label>
+          <select class="field-notes-select" id="ns-classtype" onchange="onNewSessionLessonChange()">
+            <option value="A">Class A: Learn</option>
+            <option value="B">Class B: Apply</option>
+          </select>
+        </div>
+        <div class="field-notes-field">
+          <label class="field-notes-label">Featured Movement Skill</label>
+          <input type="text" class="field-notes-select" id="ns-skill">
+        </div>
+        <div class="field-notes-field">
+          <label class="field-notes-label">Coach</label>
+          <select class="field-notes-select" id="ns-coach"><option value="">Loading…</option></select>
+        </div>
+        <div class="field-notes-field">
+          <label class="field-notes-label">Location (optional)</label>
+          <select class="field-notes-select" id="ns-location"><option value="">None</option></select>
+        </div>
+        <div class="field-notes-field">
+          <label class="field-notes-label">Age Group (optional)</label>
+          <input type="text" class="field-notes-select" id="ns-agegroup" placeholder="e.g. 5-7">
+        </div>
+        <button type="button" class="field-notes-submit" onclick="createNewSession()">Start Class Session</button>
+        <div class="field-notes-status" id="ns-status"></div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('ns-date').value = new Date().toISOString().slice(0, 10);
+  onNewSessionLessonChange();
+  populateSelect('ns-coach', '/api/tracker/coaches', 'coaches', 'Pick a coach…');
+  populateSelect('ns-location', '/api/tracker/locations', 'locations', 'None');
+}
+
+function onNewSessionLessonChange(){
+  const lessonNum = parseInt(document.getElementById('ns-lesson').value, 10);
+  const classType = document.getElementById('ns-classtype').value;
+  const mod1 = DATA.modules.find(m => m.number === 1);
+  const lesson = mod1.lessons.find(l => l.number === lessonNum);
+  const cls = classType === "B" ? lesson.classB : lesson.classA;
+  const skillEx = (cls.circuit || []).find(ex => ex.pillar === "Skill");
+  document.getElementById('ns-skill').value = skillEx ? skillEx.exercise : "";
+}
+
+async function populateSelect(elId, endpoint, listKey, placeholder){
+  const sel = document.getElementById(elId);
+  try {
+    const data = await fetchJSON(endpoint);
+    const items = data[listKey] || [];
+    sel.innerHTML = `<option value="">${esc(placeholder)}</option>` + items.map(it => `<option value="${it.id}">${esc(it.name)}</option>`).join("");
+    const savedCoach = getCurrentCoach();
+    if (listKey === "coaches" && savedCoach){
+      const match = items.find(it => it.id === savedCoach.id);
+      if (match) sel.value = match.id;
+    }
+  } catch {
+    sel.innerHTML = `<option value="">Couldn't load — try refreshing</option>`;
+  }
+}
+
+async function createNewSession(){
+  const status = document.getElementById('ns-status');
+  const lessonNum = parseInt(document.getElementById('ns-lesson').value, 10);
+  const classType = document.getElementById('ns-classtype').value;
+  const mod1 = DATA.modules.find(m => m.number === 1);
+  const lesson = mod1.lessons.find(l => l.number === lessonNum);
+  const coachSel = document.getElementById('ns-coach');
+  const coachId = coachSel.value;
+  const coachName = coachSel.options[coachSel.selectedIndex]?.text || "";
+  const locSel = document.getElementById('ns-location');
+  const locationId = locSel.value || null;
+  const locationName = locationId ? locSel.options[locSel.selectedIndex]?.text : null;
+
+  if (!coachId){
+    status.textContent = "Pick a coach.";
+    status.className = "field-notes-status error";
+    return;
+  }
+  setCurrentCoach({ id: coachId, name: coachName });
+
+  try {
+    const data = await fetchJSON('/api/tracker/class-sessions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        date: document.getElementById('ns-date').value,
+        startTime: document.getElementById('ns-time').value || null,
+        moduleId: 1,
+        moduleName: mod1.title,
+        lessonNumber: lessonNum,
+        lessonName: lesson.name,
+        classType,
+        featuredSkill: document.getElementById('ns-skill').value.trim(),
+        coachId, coachName,
+        locationId, locationName,
+        ageGroup: document.getElementById('ns-agegroup').value.trim() || null,
+        actorName: coachName,
+      }),
+    });
+    navigate(`tracker/session/${data.session.id}`);
+  } catch (err) {
+    status.textContent = err.message || "Couldn't create the session.";
+    status.className = "field-notes-status error";
+  }
+}
+
+// ---- Session History ----
+async function renderSessionHistory(app, crumb){
+  crumb.innerHTML = trackerCrumb(`<span class="sep">/</span><span class="current">Session History</span>`);
+  app.innerHTML = `
+    <div class="eyebrow">Student Progress Tracker</div>
+    <h1 class="page-title">Session History</h1>
+    <div id="session-history-list"><div class="loading-inline">Loading…</div></div>
+  `;
+  const list = document.getElementById('session-history-list');
+  try {
+    const data = await fetchJSON('/api/tracker/class-sessions');
+    const sessions = data.sessions || [];
+    if (!sessions.length){
+      list.innerHTML = `<div class="empty">No class sessions yet.</div>`;
+      return;
+    }
+    list.innerHTML = sessions.map(s => `
+      <button class="week-row" onclick="navigate('tracker/session/${s.id}')">
+        <div class="week-badge">${s.status === 'submitted' ? '✓' : '✎'}</div>
+        <div class="week-info">
+          <h3>${esc(s.lesson_name)} — Class ${esc(s.class_type)}</h3>
+          <p>${esc(s.date)} · ${esc(s.coach_name)} · ${s.status === 'submitted' ? 'Submitted' : 'Draft'}</p>
+        </div>
+        <div class="week-arrow">›</div>
+      </button>`).join("");
+  } catch (err) {
+    list.innerHTML = `<div class="error-text">Couldn't load session history. ${esc(err.message)}</div>`;
+  }
+}
+
+// ---- Class Session: Check-In & Scoring ----
+let __trackerSessionCache = null;
+
+async function renderTrackerSession(app, crumb, sessionId){
+  crumb.innerHTML = trackerCrumb(`<span class="sep">/</span><span class="current">Class Session</span>`);
+  app.innerHTML = `<div class="loading-inline">Loading class session…</div>`;
+
+  let sessionData, studentsData;
+  try {
+    [sessionData, studentsData] = await Promise.all([
+      fetchJSON(`/api/tracker/class-sessions/${sessionId}`),
+      fetchJSON('/api/tracker/students'),
+    ]);
+  } catch (err) {
+    app.innerHTML = `<div class="error-text">Couldn't load this class session. ${esc(err.message)}</div>`;
+    return;
+  }
+
+  const session = sessionData.session;
+  const recordsByStudent = {};
+  sessionData.records.forEach(r => { recordsByStudent[r.student_id] = r; });
+  const students = studentsData.students || [];
+
+  __trackerSessionCache = { session, students, recordsByStudent };
+
+  const guidancePanel = `
+    <div class="rating-guidance-overlay" id="guidance-overlay" onclick="closeGuidance(event)">
+      <div class="rating-guidance-panel" onclick="event.stopPropagation()">
+        <div class="rating-guidance-title" id="guidance-title"></div>
+        <div class="rating-guidance-body" id="guidance-body"></div>
+        <button type="button" class="back-btn" onclick="closeGuidance()">Close</button>
+      </div>
+    </div>`;
+
+  app.innerHTML = `
+    <div class="eyebrow">Student Progress Tracker — ${session.status === 'submitted' ? 'Submitted' : 'Draft'}</div>
+    <h1 class="page-title">${esc(session.lesson_name)} — Class ${esc(session.class_type)}</h1>
+    <div class="section-block">
+      <div class="info-card">
+        <div class="v">
+          <strong>${esc(session.date)}${session.start_time ? ' · ' + esc(session.start_time) : ''}</strong><br>
+          ${esc(session.module_name)} — Lesson ${esc(session.lesson_number)} · Class ${esc(session.class_type)} (${session.class_type === 'B' ? 'Apply' : 'Learn'})<br>
+          Featured Skill: ${esc(session.featured_skill)}<br>
+          Coach: ${esc(session.coach_name)}${session.location_name ? ' · ' + esc(session.location_name) : ''}
+          ${session.age_group ? ' · ' + esc(session.age_group) : ''}
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-label">Universal Scale</div>
+      <div class="info-card"><div class="v"><ul>${UNIVERSAL_SCALE.map(([r,d]) => `<li><strong>${esc(r)}:</strong> ${esc(d)}</li>`).join("")}</ul></div></div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-label">Roster</div>
+      <div id="roster-cards">
+        ${students.map(st => studentCardHTML(st, recordsByStudent[st.id])).join("")}
+      </div>
+    </div>
+
+    <div class="tracker-submit-bar">
+      <button type="button" class="back-btn" onclick="saveSessionDraft('${session.id}')" style="width:100%; text-align:center; justify-content:center;">Save Draft</button>
+      <button type="button" class="field-notes-submit" onclick="submitClassSession('${session.id}')" ${session.status === 'submitted' ? 'disabled' : ''}>
+        ${session.status === 'submitted' ? 'Already Submitted' : 'Submit Class'}
+      </button>
+      <div class="field-notes-status" id="session-status"></div>
+    </div>
+
+    ${guidancePanel}
+  `;
+}
+
+function ratingButtonsHTML(studentId, category, current){
+  const status = current ? current.status : "incomplete";
+  const score = current ? current.score : null;
+  let btns = "";
+  for (let n = 1; n <= 10; n++){
+    const selected = status === "rated" && score === n;
+    btns += `<button type="button" class="rating-btn ${ratingColorClass(n)} ${selected ? 'selected' : ''}" onclick="setRating('${studentId}','${category.key}','rated',${n})">${n}</button>`;
+  }
+  const noSelected = status === "not_observed";
+  btns += `<button type="button" class="rating-btn rating-btn-no ${noSelected ? 'selected' : ''}" onclick="setRating('${studentId}','${category.key}','not_observed',null)">N/O</button>`;
+  return btns;
+}
+
+function studentCardHTML(student, record){
+  const attendance = record ? record.attendance_status : "";
+  const cardId = `student-${student.id}`;
+  const saved = !!record;
+
+  const ratingRows = RATING_CATEGORIES.map(cat => {
+    const scoreKey = cat.key.replace(/([A-Z])/g, '_$1').toLowerCase() + "_score";
+    const statusKey = cat.key.replace(/([A-Z])/g, '_$1').toLowerCase() + "_status";
+    const current = record ? { status: record[statusKey], score: record[scoreKey] } : null;
+    return `
+      <div class="rating-row" data-category="${cat.key}">
+        <div class="rating-row-label">
+          ${esc(cat.label)}
+          <button type="button" class="info-icon" onclick="openGuidance('${cat.key}')" aria-label="Scoring guidance for ${esc(cat.label)}">i</button>
+        </div>
+        <div class="rating-buttons">${ratingButtonsHTML(student.id, cat, current)}</div>
+      </div>`;
+  }).join("");
+
+  return `
+    <div class="student-card" id="${cardId}" data-student-id="${student.id}" data-student-name="${esc(student.name)}">
+      <button type="button" class="student-card-head" onclick="toggleStudentCard('${cardId}')">
+        <div class="student-card-name">${esc(student.name)}</div>
+        <div class="student-card-meta">
+          <span class="student-status-badge" data-attendance-badge>${attendance ? esc(attendanceLabel(attendance)) : 'Not checked in'}</span>
+          <span class="student-status-badge" data-completion-badge>${completionLabel(record)}</span>
+          <span class="student-status-badge ${saved ? 'saved' : 'unsaved'}" data-saved-badge>${saved ? 'Saved' : 'Unsaved'}</span>
+        </div>
+      </button>
+      <div class="student-card-body" hidden>
+        <div class="field-notes-field">
+          <span class="field-notes-label">Attendance</span>
+          <div class="attendance-selector">
+            ${ATTENDANCE_OPTIONS.map(opt => `<button type="button" class="attendance-btn ${attendance === opt.key ? 'selected' : ''}" data-attendance="${opt.key}" onclick="setAttendance('${student.id}','${opt.key}')">${opt.label}</button>`).join("")}
+          </div>
+        </div>
+        <div class="ratings-block" ${attendance === 'absent' ? 'hidden' : ''}>
+          ${ratingRows}
+        </div>
+        <div class="field-notes-field">
+          <label class="field-notes-label">Class Note (optional)</label>
+          <textarea class="field-notes-textarea" data-note placeholder="A concise observation — not a diagnosis.">${esc(record && record.coach_note ? record.coach_note : "")}</textarea>
+        </div>
+        <button type="button" class="field-notes-submit" onclick="saveChild('${student.id}')">Save Child</button>
+        <div class="field-notes-status" data-child-status></div>
+      </div>
+    </div>`;
+}
+
+function attendanceLabel(key){
+  const opt = ATTENDANCE_OPTIONS.find(o => o.key === key);
+  return opt ? opt.label : key;
+}
+
+function completionLabel(record){
+  if (!record) return "0 / 5 rated";
+  if (record.attendance_status === "absent") return "Absent";
+  const done = RATING_CATEGORIES.filter(cat => {
+    const statusKey = cat.key.replace(/([A-Z])/g, '_$1').toLowerCase() + "_status";
+    return record[statusKey] !== "incomplete";
+  }).length;
+  return `${done} / 5 rated`;
+}
+
+function toggleStudentCard(cardId){
+  const card = document.getElementById(cardId);
+  const body = card.querySelector('.student-card-body');
+  body.hidden = !body.hidden;
+}
+
+function setAttendance(studentId, status){
+  const card = document.querySelector(`.student-card[data-student-id="${studentId}"]`);
+  card.querySelectorAll('.attendance-btn').forEach(b => b.classList.toggle('selected', b.dataset.attendance === status));
+  card.querySelector('[data-attendance-badge]').textContent = attendanceLabel(status);
+  card.querySelector('.ratings-block').hidden = status === 'absent';
+  markUnsaved(card);
+}
+
+function setRating(studentId, categoryKey, status, score){
+  const card = document.querySelector(`.student-card[data-student-id="${studentId}"]`);
+  const row = card.querySelector(`.rating-row[data-category="${categoryKey}"]`);
+  row.querySelectorAll('.rating-btn').forEach(b => b.classList.remove('selected'));
+  const btns = [...row.querySelectorAll('.rating-btn')];
+  if (status === 'not_observed'){
+    row.querySelector('.rating-btn-no').classList.add('selected');
+  } else {
+    btns[score - 1].classList.add('selected');
+  }
+  updateCompletionBadge(card);
+  markUnsaved(card);
+}
+
+function updateCompletionBadge(card){
+  const rows = [...card.querySelectorAll('.rating-row')];
+  const done = rows.filter(r => r.querySelector('.rating-btn.selected')).length;
+  card.querySelector('[data-completion-badge]').textContent = `${done} / 5 rated`;
+}
+
+function markUnsaved(card){
+  const badge = card.querySelector('[data-saved-badge]');
+  badge.textContent = 'Unsaved';
+  badge.classList.remove('saved');
+  badge.classList.add('unsaved');
+}
+
+function readCardState(card){
+  const attendanceBtn = card.querySelector('.attendance-btn.selected');
+  const attendanceStatus = attendanceBtn ? attendanceBtn.dataset.attendance : null;
+  const ratings = {};
+  RATING_CATEGORIES.forEach(cat => {
+    const row = card.querySelector(`.rating-row[data-category="${cat.key}"]`);
+    const selected = row.querySelector('.rating-btn.selected');
+    if (!selected){ ratings[cat.key] = { status: 'incomplete' }; return; }
+    if (selected.classList.contains('rating-btn-no')){ ratings[cat.key] = { status: 'not_observed' }; return; }
+    ratings[cat.key] = { status: 'rated', score: parseInt(selected.textContent, 10) };
+  });
+  const note = card.querySelector('[data-note]').value.trim();
+  return { attendanceStatus, ratings, note };
+}
+
+async function saveChild(studentId){
+  const card = document.querySelector(`.student-card[data-student-id="${studentId}"]`);
+  const status = card.querySelector('[data-child-status]');
+  const state = readCardState(card);
+
+  if (!state.attendanceStatus){
+    status.textContent = "Select an attendance status first.";
+    status.className = "field-notes-status error";
+    return;
+  }
+
+  const coach = getCurrentCoach();
+  try {
+    await fetchJSON('/api/tracker/student-records', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        classSessionId: __trackerSessionCache.session.id,
+        studentId,
+        studentName: card.dataset.studentName,
+        attendanceStatus: state.attendanceStatus,
+        ratings: state.ratings,
+        coachNote: state.note,
+        actorName: coach ? coach.name : __trackerSessionCache.session.coach_name,
+      }),
+    });
+    status.textContent = "Saved.";
+    status.className = "field-notes-status success";
+    const badge = card.querySelector('[data-saved-badge]');
+    badge.textContent = 'Saved';
+    badge.classList.remove('unsaved');
+    badge.classList.add('saved');
+  } catch (err) {
+    status.textContent = err.message || "Couldn't save this child.";
+    status.className = "field-notes-status error";
+  }
+}
+
+async function saveSessionDraft(sessionId){
+  const status = document.getElementById('session-status');
+  const cards = [...document.querySelectorAll('.student-card')];
+  const unsaved = cards.filter(c => c.querySelector('[data-saved-badge]').classList.contains('unsaved') && c.querySelector('.attendance-btn.selected'));
+  status.textContent = `Saving ${unsaved.length || 'no'} change${unsaved.length === 1 ? '' : 's'}…`;
+  status.className = "field-notes-status";
+  for (const card of unsaved){
+    await saveChild(card.dataset.studentId);
+  }
+  status.textContent = "Draft saved.";
+  status.className = "field-notes-status success";
+}
+
+async function submitClassSession(sessionId){
+  const status = document.getElementById('session-status');
+  await saveSessionDraft(sessionId);
+
+  const coach = getCurrentCoach();
+  const confirmed = confirm("Submit this class? You can still edit it afterward if needed.");
+  if (!confirmed) return;
+
+  try {
+    await fetchJSON(`/api/tracker/class-sessions/${sessionId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'submitted', actorName: coach ? coach.name : undefined }),
+    });
+    status.textContent = "Class submitted. Nice work!";
+    status.className = "field-notes-status success";
+    renderTrackerSession(document.getElementById('app'), document.getElementById('crumb'), sessionId);
+  } catch (err) {
+    if (err.status === 422 && err.data && err.data.incomplete){
+      const names = err.data.incomplete.map(i => `${i.studentName} (${i.missingCount} missing)`).join(", ");
+      status.textContent = `Incomplete ratings for: ${names}`;
+      status.className = "field-notes-status error";
+    } else {
+      status.textContent = err.message || "Couldn't submit the class.";
+      status.className = "field-notes-status error";
+    }
+  }
+}
+
+function openGuidance(categoryKey){
+  const cat = RATING_CATEGORIES.find(c => c.key === categoryKey);
+  document.getElementById('guidance-title').textContent = cat.label;
+  document.getElementById('guidance-body').innerHTML = cat.guidance.map(([r,d]) => `<p><strong>${esc(r)}:</strong> ${esc(d)}</p>`).join("");
+  document.getElementById('guidance-overlay').classList.add('open');
+}
+function closeGuidance(e){
+  if (e && e.target !== e.currentTarget && e.type === 'click' && e.currentTarget.id !== 'guidance-overlay') return;
+  document.getElementById('guidance-overlay').classList.remove('open');
+}
+
+window.addEventListener('beforeunload', function(e){
+  const dirty = document.querySelector('.student-card [data-saved-badge].unsaved');
+  if (dirty){
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
 
 window.addEventListener('hashchange', render);
 render();

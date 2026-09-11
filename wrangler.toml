@@ -6,3 +6,8 @@ compatibility_date = "2025-01-01"
 binding = "FIELD_NOTES_DB"
 database_name = "kinetiq-field-notes"
 database_id = "6dd652fd-207b-4445-ae43-db0b1d4f3984"
+
+[[d1_databases]]
+binding = "STUDENT_TRACKER_DB"
+database_name = "kinetiq-student-tracker"
+database_id = "f8742e87-d1c4-453b-bd3d-69c834c5741f"

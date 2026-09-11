@@ -1,0 +1,33 @@
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { "content-type": "application/json; charset=utf-8" },
+  });
+}
+
+export async function onRequestGet({ env }) {
+  const { results } = await env.STUDENT_TRACKER_DB
+    .prepare("SELECT * FROM locations WHERE active = 1 ORDER BY name ASC")
+    .all();
+  return json({ locations: results });
+}
+
+export async function onRequestPost({ request, env }) {
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return json({ error: "Invalid JSON body." }, 400);
+  }
+  const name = String(body.name || "").trim();
+  if (!name) return json({ error: "Location name is required." }, 400);
+
+  const id = crypto.randomUUID();
+  const createdAt = new Date().toISOString();
+  await env.STUDENT_TRACKER_DB
+    .prepare("INSERT INTO locations (id, name, active, created_at) VALUES (?, ?, 1, ?)")
+    .bind(id, name, createdAt)
+    .run();
+
+  return json({ location: { id, name, active: 1, created_at: createdAt } });
+}
