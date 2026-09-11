@@ -181,6 +181,15 @@
   }
   .back-btn:active{background:var(--cream); transform:scale(.95); transition-duration:.1s;}
 
+  .profile-actions{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;}
+  .profile-actions .back-btn, .profile-actions .danger-btn{margin-bottom:0;}
+  .danger-btn{
+    display:inline-flex; align-items:center; gap:6px; font-family:'Poppins',sans-serif; font-weight:600; font-size:13.5px;
+    color:#C0392B; background:var(--white); border:1.5px solid rgba(192,57,43,.35); border-radius:999px; padding:9px 16px;
+    transition:transform .25s cubic-bezier(.34,1.56,.64,1), background .15s;
+  }
+  .danger-btn:active{background:rgba(192,57,43,.08); transform:scale(.95); transition-duration:.1s;}
+
   .empty{text-align:center; padding:60px 20px; color:var(--muted);}
   .error-text{color:#C0392B; font-family:'Poppins',sans-serif; font-weight:600; font-size:13.5px; padding:14px; text-align:center;}
   .loading-inline{color:var(--muted); font-family:'Poppins',sans-serif; font-weight:600; font-size:13.5px; padding:14px; text-align:center;}
@@ -1432,9 +1441,29 @@ function studentInfoViewHTML(student){
         ${rows.length ? rows.map(([k, v]) => `<strong>${esc(k)}:</strong> ${esc(v)}<br>`).join("") : "No additional info on file."}
       </div>
     </div>
-    <button type="button" class="back-btn" onclick="toggleStudentEdit()">Edit Info</button>
+    <div class="profile-actions">
+      <button type="button" class="back-btn" onclick="toggleStudentEdit()">Edit Info</button>
+      <button type="button" class="danger-btn" onclick="removeStudent('${student.id}', '${esc(student.name).replace(/'/g, "\\'")}')">Remove Student</button>
+    </div>
     <div id="student-edit-form" hidden></div>
+    <div class="field-notes-status" id="remove-student-status"></div>
   `;
+}
+
+async function removeStudent(studentId, studentName){
+  const confirmed = confirm(`Remove ${studentName} from the active roster? Their past class records and scores will be kept for reporting, but they will no longer appear in the roster or be available for new class check-ins.`);
+  if (!confirmed) return;
+
+  const status = document.getElementById('remove-student-status');
+  try {
+    await fetchJSON(`/api/tracker/students/${studentId}`, { method: 'DELETE' });
+    navigate('tracker/students');
+  } catch (err) {
+    if (status){
+      status.textContent = err.message || "Couldn't remove this student.";
+      status.className = "field-notes-status error";
+    }
+  }
 }
 
 function toggleStudentEdit(){

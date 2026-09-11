@@ -58,3 +58,11 @@ export async function onRequestPatch({ request, params, env }) {
   const updated = await env.STUDENT_TRACKER_DB.prepare("SELECT * FROM students WHERE id = ?").bind(params.id).first();
   return json({ student: updated });
 }
+
+export async function onRequestDelete({ params, env }) {
+  const existing = await env.STUDENT_TRACKER_DB.prepare("SELECT * FROM students WHERE id = ?").bind(params.id).first();
+  if (!existing) return json({ error: "Student not found." }, 404);
+
+  await env.STUDENT_TRACKER_DB.prepare("UPDATE students SET active = 0 WHERE id = ?").bind(params.id).run();
+  return json({ success: true });
+}
