@@ -223,7 +223,23 @@
   .rating-guidance-body p{font-size:14px; line-height:1.5; margin-bottom:10px;}
   .rating-guidance-body strong{color:var(--blue);}
 
+  /* ---- Student Profile & Report Card ---- */
+  .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .stat-box{background:var(--white); border:1px solid var(--line); border-radius:var(--radius-md); padding:14px; text-align:center;}
+  .stat-num{font-family:'Poppins',sans-serif; font-weight:700; font-size:22px; color:var(--navy); line-height:1.2;}
+  .stat-label{font-family:'Poppins',sans-serif; font-weight:600; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.03em; margin-top:2px;}
+  .cat-avg-row{display:flex; align-items:center; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--line);}
+  .cat-avg-row:last-child{border-bottom:none;}
+  .cat-avg-row strong{color:var(--navy);}
+  .positive{color:#3F9142;}
+  .negative{color:#C0392B;}
+  .trend-chart{width:100%; height:auto; display:block;}
+  .chart-legend{display:flex; flex-wrap:wrap; gap:10px 14px; margin-top:12px;}
+  .chart-legend-item{display:flex; align-items:center; gap:5px; font-family:'Poppins',sans-serif; font-weight:600; font-size:12px; color:var(--ink);}
+  .chart-legend-item input{accent-color:var(--navy);}
+
   @media (min-width:640px){
+    .stat-grid{grid-template-columns:repeat(4,1fr);}
     .module-grid{grid-template-columns:1fr 1fr 1fr;}
     .rating-guidance-overlay{align-items:center;}
     .rating-guidance-panel{border-radius:var(--radius-lg); max-height:80vh;}
@@ -1108,7 +1124,9 @@ function renderTrackerRoute(app, crumb, parts){
   } else if (parts[1] === "sessions"){
     renderSessionHistory(app, crumb);
   } else if (parts[1] === "students"){
-    renderRosterManager(app, crumb, "students");
+    renderStudentsManager(app, crumb);
+  } else if (parts[1] === "student" && parts[2]){
+    renderStudentProfile(app, crumb, parts[2]);
   } else if (parts[1] === "coaches"){
     renderRosterManager(app, crumb, "coaches");
   } else if (parts[1] === "locations"){
@@ -1155,11 +1173,10 @@ function renderTrackerHome(app, crumb){
   `;
 }
 
-// ---- Generic simple roster manager (students / coaches / locations) ----
+// ---- Generic simple roster manager (coaches / locations) ----
 const ROSTER_CONFIG = {
-  students: { title: "Students", singular: "Student", endpoint: "/api/tracker/students", listKey: "students", hasAgeGroup: true },
-  coaches: { title: "Coaches", singular: "Coach", endpoint: "/api/tracker/coaches", listKey: "coaches", hasAgeGroup: false },
-  locations: { title: "Locations", singular: "Location", endpoint: "/api/tracker/locations", listKey: "locations", hasAgeGroup: false },
+  coaches: { title: "Coaches", singular: "Coach", endpoint: "/api/tracker/coaches", listKey: "coaches" },
+  locations: { title: "Locations", singular: "Location", endpoint: "/api/tracker/locations", listKey: "locations" },
 };
 
 async function renderRosterManager(app, crumb, entityType){
@@ -1174,11 +1191,6 @@ async function renderRosterManager(app, crumb, entityType){
           <label class="field-notes-label">${esc(cfg.singular)} Name</label>
           <input type="text" class="field-notes-select" id="roster-name-input" placeholder="Full name">
         </div>
-        ${cfg.hasAgeGroup ? `
-        <div class="field-notes-field">
-          <label class="field-notes-label">Age Group (optional)</label>
-          <input type="text" class="field-notes-select" id="roster-agegroup-input" placeholder="e.g. 5-7">
-        </div>` : ""}
         <button type="button" class="field-notes-submit" onclick="addRosterEntry('${entityType}')">Add ${esc(cfg.singular)}</button>
         <div class="field-notes-status" id="roster-status"></div>
       </div>
@@ -1236,6 +1248,410 @@ async function addRosterEntry(entityType){
     status.textContent = err.message || "Couldn't save.";
     status.className = "field-notes-status error";
   }
+}
+
+// ---- Manage Students (full profile fields) ----
+const STUDENT_FORM_FIELDS = [
+  { key: "ageGroup", dbCol: "age_group", label: "Age Group", placeholder: "e.g. 5-7", type: "text" },
+  { key: "dateOfBirth", dbCol: "date_of_birth", label: "Date of Birth", type: "date" },
+  { key: "enrollmentDate", dbCol: "enrollment_date", label: "Enrollment Date", type: "date" },
+  { key: "parentName", dbCol: "parent_name", label: "Parent/Guardian Name", type: "text" },
+  { key: "parentContact", dbCol: "parent_contact", label: "Parent/Guardian Contact", placeholder: "Phone or email", type: "text" },
+  { key: "generalNotes", dbCol: "general_notes", label: "General Notes (optional)", type: "textarea" },
+  { key: "medicalNotes", dbCol: "medical_notes", label: "Injuries, Conditions, or Safety Notes (optional)", type: "textarea" },
+];
+
+function studentFieldInputHTML(field, idPrefix, value){
+  const val = value ? esc(value) : "";
+  if (field.type === "textarea"){
+    return `
+      <div class="field-notes-field">
+        <label class="field-notes-label">${esc(field.label)}</label>
+        <textarea class="field-notes-textarea" id="${idPrefix}-${field.key}">${val}</textarea>
+      </div>`;
+  }
+  return `
+    <div class="field-notes-field">
+      <label class="field-notes-label">${esc(field.label)}</label>
+      <input type="${field.type}" class="field-notes-select" id="${idPrefix}-${field.key}" placeholder="${field.placeholder ? esc(field.placeholder) : ""}" value="${val}">
+    </div>`;
+}
+
+function readStudentForm(idPrefix){
+  const data = {};
+  STUDENT_FORM_FIELDS.forEach(f => {
+    const el = document.getElementById(`${idPrefix}-${f.key}`);
+    data[f.key] = el ? el.value.trim() : "";
+  });
+  return data;
+}
+
+async function renderStudentsManager(app, crumb){
+  crumb.innerHTML = trackerCrumb(`<span class="sep">/</span><span class="current">Students</span>`);
+  app.innerHTML = `
+    <div class="eyebrow">Student Progress Tracker</div>
+    <h1 class="page-title">Students</h1>
+    <div class="section-block">
+      <div class="field-notes-card">
+        <div class="field-notes-field">
+          <label class="field-notes-label">Student Name</label>
+          <input type="text" class="field-notes-select" id="new-student-name" placeholder="Full name">
+        </div>
+        ${STUDENT_FORM_FIELDS.map(f => studentFieldInputHTML(f, "new-student")).join("")}
+        <button type="button" class="field-notes-submit" onclick="addStudentEntry()">Add Student</button>
+        <div class="field-notes-status" id="new-student-status"></div>
+      </div>
+    </div>
+    <div class="section-block">
+      <div class="section-label">Current Students</div>
+      <div id="students-list"><div class="loading-inline">Loading…</div></div>
+    </div>
+  `;
+  await loadStudentsList();
+}
+
+async function loadStudentsList(){
+  const list = document.getElementById('students-list');
+  try {
+    const data = await fetchJSON('/api/tracker/students');
+    const items = data.students || [];
+    if (!items.length){
+      list.innerHTML = `<div class="empty">No students yet — add the first one above.</div>`;
+      return;
+    }
+    list.innerHTML = items.map(it => `
+      <button class="week-row" onclick="navigate('tracker/student/${it.id}')">
+        <div class="week-badge">🧒</div>
+        <div class="week-info">
+          <h3>${esc(it.name)}</h3>
+          <p>${it.age_group ? esc(it.age_group) : "No age group set"}${it.parent_name ? ' · ' + esc(it.parent_name) : ''}</p>
+        </div>
+        <div class="week-arrow">›</div>
+      </button>`).join("");
+  } catch (err) {
+    list.innerHTML = `<div class="error-text">Couldn't load students. ${esc(err.message)}</div>`;
+  }
+}
+
+async function addStudentEntry(){
+  const status = document.getElementById('new-student-status');
+  const name = document.getElementById('new-student-name').value.trim();
+  if (!name){
+    status.textContent = "Enter a name first.";
+    status.className = "field-notes-status error";
+    return;
+  }
+  const fields = readStudentForm('new-student');
+  try {
+    await fetchJSON('/api/tracker/students', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, ...fields }),
+    });
+    document.getElementById('new-student-name').value = "";
+    STUDENT_FORM_FIELDS.forEach(f => { document.getElementById(`new-student-${f.key}`).value = ""; });
+    status.textContent = "Added.";
+    status.className = "field-notes-status success";
+    await loadStudentsList();
+  } catch (err) {
+    status.textContent = err.message || "Couldn't save.";
+    status.className = "field-notes-status error";
+  }
+}
+
+// ---- Student Profile & Progress Page ----
+let __studentProfileCache = null;
+
+function catCols(key){
+  const prefix = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+  return [`${prefix}_score`, `${prefix}_status`];
+}
+
+async function renderStudentProfile(app, crumb, studentId){
+  crumb.innerHTML = trackerCrumb(`<span class="sep">/</span><button onclick="navigate('tracker/students')">Students</button><span class="sep">/</span><span class="current">Profile</span>`);
+  app.innerHTML = `<div class="loading-inline">Loading student…</div>`;
+
+  let data;
+  try {
+    data = await fetchJSON(`/api/tracker/student-progress/${studentId}`);
+  } catch (err) {
+    app.innerHTML = `<div class="error-text">Couldn't load this student. ${esc(err.message)}</div>`;
+    return;
+  }
+
+  __studentProfileCache = data;
+  const student = data.student;
+
+  crumb.innerHTML = trackerCrumb(`<span class="sep">/</span><button onclick="navigate('tracker/students')">Students</button><span class="sep">/</span><span class="current">${esc(student.name)}</span>`);
+
+  const moduleOptions = `<option value="all">All Modules</option>` +
+    DATA.modules.map(m => `<option value="${m.number}">Module ${m.number}: ${esc(m.title)}</option>`).join("");
+
+  app.innerHTML = `
+    <div class="eyebrow">Student Progress Tracker</div>
+    <h1 class="page-title">${esc(student.name)}</h1>
+    <p class="page-sub">${student.age_group ? esc(student.age_group) : "No age group set"}</p>
+
+    <div class="section-block">
+      <div class="section-label">Profile Info</div>
+      <div id="student-info-view">${studentInfoViewHTML(student)}</div>
+    </div>
+
+    <div class="section-block">
+      <div class="field-notes-card">
+        <div class="field-notes-field">
+          <label class="field-notes-label">View Progress For</label>
+          <select class="field-notes-select" id="progress-module-select" onchange="onProgressModuleChange()">${moduleOptions}</select>
+        </div>
+      </div>
+    </div>
+
+    <div id="report-card-root"></div>
+  `;
+
+  const defaultModule = data.records.length ? String(data.records[data.records.length - 1].module_id) : "all";
+  const sel = document.getElementById('progress-module-select');
+  if ([...sel.options].some(o => o.value === defaultModule)) sel.value = defaultModule;
+  renderReportCard();
+}
+
+function studentInfoViewHTML(student){
+  const rows = [
+    ["Age Group", student.age_group],
+    ["Date of Birth", student.date_of_birth],
+    ["Enrollment Date", student.enrollment_date],
+    ["Parent/Guardian", student.parent_name],
+    ["Parent Contact", student.parent_contact],
+    ["General Notes", student.general_notes],
+    ["Safety Notes", student.medical_notes],
+  ].filter(([, v]) => v);
+
+  return `
+    <div class="info-card">
+      <div class="v">
+        ${rows.length ? rows.map(([k, v]) => `<strong>${esc(k)}:</strong> ${esc(v)}<br>`).join("") : "No additional info on file."}
+      </div>
+    </div>
+    <button type="button" class="back-btn" onclick="toggleStudentEdit()">Edit Info</button>
+    <div id="student-edit-form" hidden></div>
+  `;
+}
+
+function toggleStudentEdit(){
+  const wrap = document.getElementById('student-edit-form');
+  const student = __studentProfileCache.student;
+  if (!wrap.hidden){ wrap.hidden = true; wrap.innerHTML = ""; return; }
+  wrap.hidden = false;
+  wrap.innerHTML = `
+    <div class="field-notes-card">
+      <div class="field-notes-field">
+        <label class="field-notes-label">Student Name</label>
+        <input type="text" class="field-notes-select" id="edit-student-name" value="${esc(student.name)}">
+      </div>
+      ${STUDENT_FORM_FIELDS.map(f => studentFieldInputHTML(f, "edit-student", student[f.dbCol])).join("")}
+      <button type="button" class="field-notes-submit" onclick="saveStudentEdit('${student.id}')">Save Changes</button>
+      <div class="field-notes-status" id="edit-student-status"></div>
+    </div>
+  `;
+}
+
+async function saveStudentEdit(studentId){
+  const status = document.getElementById('edit-student-status');
+  const name = document.getElementById('edit-student-name').value.trim();
+  if (!name){
+    status.textContent = "Name can't be blank.";
+    status.className = "field-notes-status error";
+    return;
+  }
+  const fields = readStudentForm('edit-student');
+  try {
+    const data = await fetchJSON(`/api/tracker/students/${studentId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, ...fields }),
+    });
+    __studentProfileCache.student = data.student;
+    document.getElementById('student-info-view').innerHTML = studentInfoViewHTML(data.student);
+  } catch (err) {
+    status.textContent = err.message || "Couldn't save changes.";
+    status.className = "field-notes-status error";
+  }
+}
+
+function onProgressModuleChange(){
+  renderReportCard();
+}
+
+function overallRecordAverage(record){
+  const scores = RATING_CATEGORIES
+    .map(cat => { const [sc, st] = catCols(cat.key); return record[st] === 'rated' ? record[sc] : null; })
+    .filter(v => v !== null);
+  return scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : null;
+}
+
+function renderReportCard(){
+  const root = document.getElementById('report-card-root');
+  const all = __studentProfileCache.records;
+  const sel = document.getElementById('progress-module-select').value;
+  const filtered = sel === 'all' ? all : all.filter(r => String(r.module_id) === sel);
+
+  if (!all.length){
+    root.innerHTML = `<div class="empty">No classes recorded for this student yet.</div>`;
+    return;
+  }
+  if (!filtered.length){
+    root.innerHTML = `<div class="empty">No classes recorded for this student in this module yet.</div>`;
+    return;
+  }
+
+  const totalClasses = filtered.length;
+  const nonAbsent = filtered.filter(r => r.attendance_status !== 'absent');
+  const attendanceRate = Math.round((nonAbsent.length / totalClasses) * 100);
+  const totalPossibleRatings = nonAbsent.length * RATING_CATEGORIES.length;
+  const completedRatings = filtered.reduce((sum, r) => sum + RATING_CATEGORIES.filter(cat => { const [, st] = catCols(cat.key); return r[st] !== 'incomplete'; }).length, 0);
+
+  const lastOverall = all[all.length - 1];
+  const currentModuleLabel = `Module ${lastOverall.module_id}: ${esc(lastOverall.module_name)}`;
+
+  const categoryAverages = RATING_CATEGORIES.map(cat => {
+    const [sc, st] = catCols(cat.key);
+    const rated = filtered.filter(r => r[st] === 'rated').map(r => r[sc]);
+    const avg = rated.length ? (rated.reduce((a, b) => a + b, 0) / rated.length) : null;
+    return { label: cat.label, avg, count: rated.length };
+  });
+
+  const withOverall = filtered.map(r => ({ r, avg: overallRecordAverage(r) })).filter(x => x.avg !== null);
+  const beginning = withOverall.length ? withOverall[0] : null;
+  const recent = withOverall.length ? withOverall[withOverall.length - 1] : null;
+  const change = beginning && recent ? recent.avg - beginning.avg : null;
+  const pctChange = (beginning && recent && beginning.avg > 0) ? (change / beginning.avg) * 100 : null;
+
+  const classA = filtered.filter(r => r.class_type === 'A').map(overallRecordAverage).filter(v => v !== null);
+  const classB = filtered.filter(r => r.class_type === 'B').map(overallRecordAverage).filter(v => v !== null);
+  const classAAvg = classA.length ? classA.reduce((a, b) => a + b, 0) / classA.length : null;
+  const classBAvg = classB.length ? classB.reduce((a, b) => a + b, 0) / classB.length : null;
+
+  const notesHistory = filtered.filter(r => r.coach_note);
+
+  root.innerHTML = `
+    <div class="section-block">
+      <div class="section-label">Report Card</div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-num">${totalClasses}</div><div class="stat-label">Classes</div></div>
+        <div class="stat-box"><div class="stat-num">${attendanceRate}%</div><div class="stat-label">Attendance</div></div>
+        <div class="stat-box"><div class="stat-num">${completedRatings}/${totalPossibleRatings}</div><div class="stat-label">Ratings Completed</div></div>
+        <div class="stat-box"><div class="stat-num" style="font-size:14px;">${currentModuleLabel}</div><div class="stat-label">Current Module</div></div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-label">Average Score by Category</div>
+      <div class="info-card"><div class="v">
+        ${categoryAverages.map(c => `<div class="cat-avg-row"><span>${esc(c.label)}</span><strong>${c.avg !== null ? c.avg.toFixed(1) : '—'}</strong></div>`).join("")}
+      </div></div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-label">Progress Over the Selected Range</div>
+      <div class="info-card">
+        <div class="v">
+          ${beginning && recent ? `
+            Beginning average: <strong>${beginning.avg.toFixed(1)}</strong> (${esc(beginning.r.date)})<br>
+            Most recent average: <strong>${recent.avg.toFixed(1)}</strong> (${esc(recent.r.date)})<br>
+            Change: <strong class="${change >= 0 ? 'positive' : 'negative'}">${change >= 0 ? '+' : ''}${change.toFixed(1)}</strong>
+            ${pctChange !== null ? ` (<strong class="${pctChange >= 0 ? 'positive' : 'negative'}">${pctChange >= 0 ? '+' : ''}${pctChange.toFixed(0)}%</strong>)` : ''}
+          ` : `Not enough rated classes yet to show a trend.`}
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-label">Score Trend</div>
+      <div class="info-card">
+        ${buildTrendChart(filtered)}
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-label">Class A (Learn) vs Class B (Apply)</div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-num">${classAAvg !== null ? classAAvg.toFixed(1) : '—'}</div><div class="stat-label">Class A avg</div></div>
+        <div class="stat-box"><div class="stat-num">${classBAvg !== null ? classBAvg.toFixed(1) : '—'}</div><div class="stat-label">Class B avg</div></div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-label">Featured Skill History</div>
+      <div class="info-card"><div class="v">
+        ${filtered.map(r => {
+          const [sc, st] = catCols('skillCompetency');
+          const val = r[st] === 'rated' ? r[sc] : (r[st] === 'not_observed' ? 'N/O' : '—');
+          return `<div class="cat-avg-row"><span>${esc(r.date)} — ${esc(r.featured_skill)}</span><strong>${val}</strong></div>`;
+        }).join("")}
+      </div></div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-label">Coach Notes</div>
+      ${notesHistory.length ? notesHistory.map(r => `
+        <div class="info-card"><div class="v"><strong>${esc(r.date)}:</strong> ${esc(r.coach_note)}</div></div>
+      `).join("") : `<div class="empty">No notes recorded for this range.</div>`}
+    </div>
+  `;
+}
+
+const CHART_COLORS = {
+  skillCompetency: '#2676BF',
+  confidence: '#FF8A3D',
+  balanceControl: '#3F9142',
+  focusDirections: '#133260',
+  effortResilience: '#8E44AD',
+};
+
+function buildTrendChart(records){
+  if (records.length < 2){
+    return `<div class="v">Not enough classes yet to plot a trend.</div>`;
+  }
+  const W = 640, H = 220, padX = 20, padY = 16;
+  const n = records.length;
+  const xFor = i => padX + (n === 1 ? 0 : (i / (n - 1)) * (W - 2 * padX));
+  const yFor = score => padY + ((10 - score) / 9) * (H - 2 * padY);
+
+  const legend = RATING_CATEGORIES.map(cat => `
+    <label class="chart-legend-item">
+      <input type="checkbox" checked data-chart-toggle="${cat.key}" onchange="toggleChartCategory('${cat.key}', this.checked)">
+      <span style="color:${CHART_COLORS[cat.key]}">●</span> ${esc(cat.label)}
+    </label>`).join("");
+
+  const paths = RATING_CATEGORIES.map(cat => {
+    const [sc, st] = catCols(cat.key);
+    let d = "";
+    let drawing = false;
+    const dots = [];
+    records.forEach((r, i) => {
+      if (r[st] === 'rated'){
+        const x = xFor(i), y = yFor(r[sc]);
+        d += (drawing ? " L " : "M ") + x.toFixed(1) + " " + y.toFixed(1);
+        drawing = true;
+        dots.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5" fill="${CHART_COLORS[cat.key]}"></circle>`);
+      } else {
+        drawing = false;
+      }
+    });
+    return `<g data-chart-series="${cat.key}"><path d="${d}" fill="none" stroke="${CHART_COLORS[cat.key]}" stroke-width="2"></path>${dots.join("")}</g>`;
+  }).join("");
+
+  const gridLines = [1, 5.5, 10].map(v => `<line x1="${padX}" y1="${yFor(v).toFixed(1)}" x2="${W - padX}" y2="${yFor(v).toFixed(1)}" stroke="var(--line)" stroke-width="1"></line>`).join("");
+
+  return `
+    <svg viewBox="0 0 ${W} ${H}" class="trend-chart">${gridLines}${paths}</svg>
+    <div class="chart-legend">${legend}</div>
+  `;
+}
+
+function toggleChartCategory(key, visible){
+  const g = document.querySelector(`.trend-chart g[data-chart-series="${key}"]`);
+  if (g) g.style.display = visible ? "" : "none";
 }
 
 // ---- New Class Session ----
