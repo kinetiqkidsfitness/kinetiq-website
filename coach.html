@@ -636,6 +636,16 @@ const SECTIONS = [
     title: "Student Progress Tracker",
     description: "Score classes and track each child's progress.",
   },
+  {
+    id: "coaches",
+    title: "Coaches",
+    description: "Add or view the coaches who can score classes.",
+  },
+  {
+    id: "locations",
+    title: "Locations",
+    description: "Add or view class locations.",
+  },
 ];
 
 function render(){
@@ -655,6 +665,10 @@ function render(){
     renderCurriculumHome(app, crumb);
   } else if (parts[0] === "tracker"){
     renderTrackerRoute(app, crumb, parts);
+  } else if (parts[0] === "coaches"){
+    renderRosterManager(app, crumb, "coaches");
+  } else if (parts[0] === "locations"){
+    renderRosterManager(app, crumb, "locations");
   } else {
     renderHome(app, crumb);
   }
@@ -1127,10 +1141,6 @@ function renderTrackerRoute(app, crumb, parts){
     renderStudentsManager(app, crumb);
   } else if (parts[1] === "student" && parts[2]){
     renderStudentProfile(app, crumb, parts[2]);
-  } else if (parts[1] === "coaches"){
-    renderRosterManager(app, crumb, "coaches");
-  } else if (parts[1] === "locations"){
-    renderRosterManager(app, crumb, "locations");
   } else {
     app.innerHTML = `<div class="empty">Page not found.</div>`;
   }
@@ -1159,16 +1169,6 @@ function renderTrackerHome(app, crumb){
         <div class="week-info"><h3>Manage Students</h3><p>Add or view the student roster</p></div>
         <div class="week-arrow">›</div>
       </button>
-      <button class="week-row" onclick="navigate('tracker/coaches')">
-        <div class="week-badge">C</div>
-        <div class="week-info"><h3>Manage Coaches</h3><p>Add coaches who can score classes</p></div>
-        <div class="week-arrow">›</div>
-      </button>
-      <button class="week-row" onclick="navigate('tracker/locations')">
-        <div class="week-badge">L</div>
-        <div class="week-info"><h3>Manage Locations</h3><p>Add class locations</p></div>
-        <div class="week-arrow">›</div>
-      </button>
     </div>
   `;
 }
@@ -1181,9 +1181,9 @@ const ROSTER_CONFIG = {
 
 async function renderRosterManager(app, crumb, entityType){
   const cfg = ROSTER_CONFIG[entityType];
-  crumb.innerHTML = trackerCrumb(`<span class="sep">/</span><span class="current">${esc(cfg.title)}</span>`);
+  crumb.innerHTML = `<button onclick="navigate('')">Home</button><span class="sep">/</span><span class="current">${esc(cfg.title)}</span>`;
   app.innerHTML = `
-    <div class="eyebrow">Student Progress Tracker</div>
+    <div class="eyebrow">${esc(cfg.title)}</div>
     <h1 class="page-title">${esc(cfg.title)}</h1>
     <div class="section-block">
       <div class="field-notes-card">
