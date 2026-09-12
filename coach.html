@@ -1165,17 +1165,14 @@ function renderTrackerHome(app, crumb){
     <p class="page-sub">${coach ? `Signed in as <strong>${esc(coach.name)}</strong>.` : "Score classes and track each child's progress."}</p>
     <div class="week-list">
       <button class="week-row" onclick="navigate('tracker/new-session')">
-        <div class="week-badge">＋</div>
         <div class="week-info"><h3>New Class Session</h3><p>Check in and score today's class</p></div>
         <div class="week-arrow">›</div>
       </button>
       <button class="week-row" onclick="navigate('tracker/sessions')">
-        <div class="week-badge">≡</div>
         <div class="week-info"><h3>Session History</h3><p>Resume drafts, review or edit past classes</p></div>
         <div class="week-arrow">›</div>
       </button>
       <button class="week-row" onclick="navigate('tracker/students')">
-        <div class="week-badge">🧒</div>
         <div class="week-info"><h3>Manage Students</h3><p>Add or view the student roster</p></div>
         <div class="week-arrow">›</div>
       </button>
@@ -1331,7 +1328,6 @@ async function loadStudentsList(){
     }
     list.innerHTML = items.map(it => `
       <button class="week-row" onclick="navigate('tracker/student/${it.id}')">
-        <div class="week-badge">🧒</div>
         <div class="week-info">
           <h3>${esc(it.name)}</h3>
           <p>${it.age_group ? esc(it.age_group) : "No age group set"}${it.parent_name ? ' · ' + esc(it.parent_name) : ''}</p>
@@ -1688,8 +1684,7 @@ function toggleChartCategory(key, visible){
 async function renderNewSession(app, crumb){
   crumb.innerHTML = trackerCrumb(`<span class="sep">/</span><span class="current">New Session</span>`);
 
-  const mod1 = DATA.modules.find(m => m.number === 1);
-  const lessonOptions = mod1.lessons.map(l => `<option value="${l.number}">Lesson ${l.number}: ${esc(l.name)}</option>`).join("");
+  const moduleOptions = DATA.modules.map(m => `<option value="${m.number}">Module ${m.number}: ${esc(m.title)}</option>`).join("");
 
   app.innerHTML = `
     <div class="eyebrow">Student Progress Tracker</div>
@@ -1705,12 +1700,16 @@ async function renderNewSession(app, crumb){
           <input type="time" class="field-notes-select" id="ns-time">
         </div>
         <div class="field-notes-field">
-          <label class="field-notes-label">Lesson</label>
-          <select class="field-notes-select" id="ns-lesson" onchange="onNewSessionLessonChange()">${lessonOptions}</select>
+          <label class="field-notes-label">Module</label>
+          <select class="field-notes-select" id="ns-module" onchange="onNewSessionModuleChange()">${moduleOptions}</select>
         </div>
         <div class="field-notes-field">
+          <label class="field-notes-label" id="ns-unit-label">Lesson</label>
+          <select class="field-notes-select" id="ns-unit" onchange="onNewSessionUnitChange()"></select>
+        </div>
+        <div class="field-notes-field" id="ns-classtype-field">
           <label class="field-notes-label">Class Type</label>
-          <select class="field-notes-select" id="ns-classtype" onchange="onNewSessionLessonChange()">
+          <select class="field-notes-select" id="ns-classtype" onchange="onNewSessionUnitChange()">
             <option value="A">Class A: Learn</option>
             <option value="B">Class B: Apply</option>
           </select>
@@ -1738,18 +1737,43 @@ async function renderNewSession(app, crumb){
   `;
 
   document.getElementById('ns-date').value = new Date().toISOString().slice(0, 10);
-  onNewSessionLessonChange();
+  onNewSessionModuleChange();
   populateSelect('ns-coach', '/api/tracker/coaches', 'coaches', 'Pick a coach…');
   populateSelect('ns-location', '/api/tracker/locations', 'locations', 'None');
 }
 
-function onNewSessionLessonChange(){
-  const lessonNum = parseInt(document.getElementById('ns-lesson').value, 10);
-  const classType = document.getElementById('ns-classtype').value;
-  const mod1 = DATA.modules.find(m => m.number === 1);
-  const lesson = mod1.lessons.find(l => l.number === lessonNum);
-  const cls = classType === "B" ? lesson.classB : lesson.classA;
-  const skillEx = (cls.circuit || []).find(ex => ex.pillar === "Skill");
+function moduleUnitOptions(mod){
+  if (mod.lessons){
+    return mod.lessons.map(l => `<option value="${l.number}">Lesson ${l.number}: ${esc(l.name)}</option>`).join("");
+  }
+  return mod.weeks.map(w => `<option value="${w.week}">Week ${w.week}: ${esc(w.name)}</option>`).join("");
+}
+
+function onNewSessionModuleChange(){
+  const modNum = parseInt(document.getElementById('ns-module').value, 10);
+  const mod = DATA.modules.find(m => m.number === modNum);
+  const hasLessons = !!mod.lessons;
+  document.getElementById('ns-unit-label').textContent = hasLessons ? "Lesson" : "Week";
+  document.getElementById('ns-unit').innerHTML = moduleUnitOptions(mod);
+  document.getElementById('ns-classtype-field').hidden = !hasLessons;
+  onNewSessionUnitChange();
+}
+
+function onNewSessionUnitChange(){
+  const modNum = parseInt(document.getElementById('ns-module').value, 10);
+  const mod = DATA.modules.find(m => m.number === modNum);
+  const unitNum = parseInt(document.getElementById('ns-unit').value, 10);
+  let circuit;
+  if (mod.lessons){
+    const lesson = mod.lessons.find(l => l.number === unitNum);
+    const classType = document.getElementById('ns-classtype').value;
+    const cls = classType === "B" ? lesson.classB : lesson.classA;
+    circuit = cls.circuit;
+  } else {
+    const week = mod.weeks.find(w => w.week === unitNum);
+    circuit = week.circuit;
+  }
+  const skillEx = (circuit || []).find(ex => ex.pillar === "Skill");
   document.getElementById('ns-skill').value = skillEx ? skillEx.exercise : "";
 }
 
@@ -1771,10 +1795,21 @@ async function populateSelect(elId, endpoint, listKey, placeholder){
 
 async function createNewSession(){
   const status = document.getElementById('ns-status');
-  const lessonNum = parseInt(document.getElementById('ns-lesson').value, 10);
-  const classType = document.getElementById('ns-classtype').value;
-  const mod1 = DATA.modules.find(m => m.number === 1);
-  const lesson = mod1.lessons.find(l => l.number === lessonNum);
+  const modNum = parseInt(document.getElementById('ns-module').value, 10);
+  const mod = DATA.modules.find(m => m.number === modNum);
+  const unitNum = parseInt(document.getElementById('ns-unit').value, 10);
+
+  let unitName, classType;
+  if (mod.lessons){
+    const lesson = mod.lessons.find(l => l.number === unitNum);
+    unitName = lesson.name;
+    classType = document.getElementById('ns-classtype').value;
+  } else {
+    const week = mod.weeks.find(w => w.week === unitNum);
+    unitName = week.name;
+    classType = "A";
+  }
+
   const coachSel = document.getElementById('ns-coach');
   const coachId = coachSel.value;
   const coachName = coachSel.options[coachSel.selectedIndex]?.text || "";
@@ -1796,10 +1831,10 @@ async function createNewSession(){
       body: JSON.stringify({
         date: document.getElementById('ns-date').value,
         startTime: document.getElementById('ns-time').value || null,
-        moduleId: 1,
-        moduleName: mod1.title,
-        lessonNumber: lessonNum,
-        lessonName: lesson.name,
+        moduleId: mod.number,
+        moduleName: mod.title,
+        lessonNumber: unitNum,
+        lessonName: unitName,
         classType,
         featuredSkill: document.getElementById('ns-skill').value.trim(),
         coachId, coachName,
@@ -1833,7 +1868,6 @@ async function renderSessionHistory(app, crumb){
     }
     list.innerHTML = sessions.map(s => `
       <button class="week-row" onclick="navigate('tracker/session/${s.id}')">
-        <div class="week-badge">${s.status === 'submitted' ? '✓' : '✎'}</div>
         <div class="week-info">
           <h3>${esc(s.lesson_name)} — Class ${esc(s.class_type)}</h3>
           <p>${esc(s.date)} · ${esc(s.coach_name)} · ${s.status === 'submitted' ? 'Submitted' : 'Draft'}</p>
