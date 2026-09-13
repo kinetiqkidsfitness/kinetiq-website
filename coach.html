@@ -1617,6 +1617,29 @@ function renderReportCard(){
       </div></div>
     </div>
 
+    ${sel !== 'all' ? `
+    <div class="section-block">
+      <div class="section-label">Report Card Comments</div>
+      <p class="page-sub" style="margin-bottom:12px;">These feed the printed/emailed report card for this module — greatest strength, biggest improvement, and next step.</p>
+      <div class="field-notes-card">
+        <div class="field-notes-field">
+          <label class="field-notes-label">Greatest Strength</label>
+          <textarea class="field-notes-textarea" id="notes-greatest-strength" placeholder="Loading…"></textarea>
+        </div>
+        <div class="field-notes-field">
+          <label class="field-notes-label">Biggest Improvement</label>
+          <textarea class="field-notes-textarea" id="notes-biggest-improvement" placeholder="Loading…"></textarea>
+        </div>
+        <div class="field-notes-field">
+          <label class="field-notes-label">Next Step</label>
+          <textarea class="field-notes-textarea" id="notes-next-step" placeholder="Loading…"></textarea>
+        </div>
+        <button type="button" class="field-notes-submit" onclick="saveModuleNotes()">Save Comments</button>
+        <div class="field-notes-status" id="module-notes-status"></div>
+      </div>
+    </div>
+    ` : ''}
+
     <div class="section-block">
       <div class="section-label">Coach Notes</div>
       ${notesHistory.length ? notesHistory.map(r => `
@@ -1624,6 +1647,54 @@ function renderReportCard(){
       `).join("") : `<div class="empty">No notes recorded for this range.</div>`}
     </div>
   `;
+
+  if (sel !== 'all'){
+    loadModuleNotes(__studentProfileCache.student.id, sel);
+  }
+}
+
+async function loadModuleNotes(studentId, moduleId){
+  const gs = document.getElementById('notes-greatest-strength');
+  const bi = document.getElementById('notes-biggest-improvement');
+  const ns = document.getElementById('notes-next-step');
+  if (!gs) return;
+  gs.placeholder = bi.placeholder = ns.placeholder = "Loading…";
+  try {
+    const data = await fetchJSON(`/api/tracker/module-notes?studentId=${studentId}&moduleId=${moduleId}`);
+    const note = data.note || {};
+    gs.value = note.greatest_strength || "";
+    bi.value = note.biggest_improvement || "";
+    ns.value = note.next_step || "";
+  } catch (err) {
+    // leave blank if the fetch fails; coach can still type and save
+  } finally {
+    gs.placeholder = bi.placeholder = ns.placeholder = "";
+  }
+}
+
+async function saveModuleNotes(){
+  const status = document.getElementById('module-notes-status');
+  const studentId = __studentProfileCache.student.id;
+  const moduleId = document.getElementById('progress-module-select').value;
+  const coach = getCurrentCoach();
+  try {
+    await fetchJSON('/api/tracker/module-notes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        studentId, moduleId,
+        greatestStrength: document.getElementById('notes-greatest-strength').value.trim(),
+        biggestImprovement: document.getElementById('notes-biggest-improvement').value.trim(),
+        nextStep: document.getElementById('notes-next-step').value.trim(),
+        actorName: coach ? coach.name : undefined,
+      }),
+    });
+    status.textContent = "Saved.";
+    status.className = "field-notes-status success";
+  } catch (err) {
+    status.textContent = err.message || "Couldn't save comments.";
+    status.className = "field-notes-status error";
+  }
 }
 
 const CHART_COLORS = {
