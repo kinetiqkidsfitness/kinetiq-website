@@ -47,6 +47,13 @@ document.addEventListener('DOMContentLoaded', async function() {
         e.target.tagName, String(e.target.src || e.target.href || ''));
       return;
     }
+    // Browsers scrub cross-origin/opaque script errors down to the generic
+    // "Script error." with no filename/line — nothing actionable to show a
+    // visitor, so log it instead of drawing the banner.
+    if (e.message === 'Script error.' && !e.filename) {
+      console.error('[bundle] opaque script error (no details available)');
+      return;
+    }
     var p = document.body || document.documentElement;
     var d = document.getElementById('__bundler_err') || p.appendChild(document.createElement('div'));
     d.id = '__bundler_err';
