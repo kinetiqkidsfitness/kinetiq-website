@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Join Early Access · KinetIQ</title>
+<meta name="description" content="Be one of the first KinetIQ families. Join early access to test Class 1A & 1B and help shape the KinetIQ experience.">
+<meta property="og:title" content="Join Early Access · KinetIQ">
+<meta property="og:description" content="Be one of the first KinetIQ families. Join early access to test Class 1A & 1B and help shape the KinetIQ experience.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/logo-mark.png">
+<meta name="theme-color" content="#14325f">
+<link rel="icon" href="assets/logo-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800;6..12,900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#fff5ed;color:#14325f;font-family:'Nunito Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select{border:0;font-family:inherit}
+a{color:#2575bf;text-decoration:none}
+a:hover{color:#14325f}
+::selection{background:#77ff45;color:#14325f}
+:focus-visible{outline:3px solid #2575bf;outline-offset:3px}
+img{max-width:100%;display:block}
+.wrap{max-width:1240px;margin:0 auto;padding:0 clamp(20px,4vw,48px)}
+section{padding:clamp(56px,8vw,104px) 0}
+h1,h2{margin:0;font-weight:900;letter-spacing:-0.03em}
+.eyebrow{font-size:13px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#2575bf}
+.eyebrow.on-navy{color:#8cc4f5}
+.btn{display:inline-flex;align-items:center;justify-content:space-between;gap:14px;min-height:56px;font-weight:900;font-size:17px;padding:0 20px;border-radius:8px;cursor:pointer;transition:transform .15s,background .15s,box-shadow .15s}
+.btn:hover{transform:translate(-2px,-2px)}
+.btn-green{background:#77ff45;color:#14325f;box-shadow:4px 4px 0 #2575bf}
+.btn-green:hover{background:#5fe82f;color:#14325f;box-shadow:6px 6px 0 #2575bf}
+.btn-navy{background:#14325f;color:#fff;box-shadow:4px 4px 0 #2575bf}
+.btn-navy:hover{background:#0f2749;color:#fff;box-shadow:6px 6px 0 #2575bf}
+.btn-soft{background:#e8f1fb;color:#14325f}
+.btn-soft:hover{background:#d3e5f7;color:#14325f}
+.btn-soft-dark{background:rgba(255,255,255,.14);color:#fff}
+.btn-soft-dark:hover{background:#fff;color:#14325f}
+.card{border-radius:12px}
+.pattern-bg{background:linear-gradient(rgba(255,255,255,.9),rgba(255,255,255,.9)),url(assets/pattern.png) center/520px repeat}
+.pattern-bg-cream{background:linear-gradient(rgba(255,245,237,.9),rgba(255,245,237,.9)),url(assets/pattern.png) center/520px repeat}
+.grid-fit{display:grid;gap:16px}
+
+/* Header */
+header{position:sticky;top:0;z-index:50;background:rgba(255,245,237,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.nav-inner{max-width:1240px;margin:0 auto;padding:0 clamp(16px,4vw,48px);height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.nav-logo{display:flex;align-items:center;flex:none}
+.kq-logo{position:relative;display:block;height:32px;width:104px}
+.kq-logo img{position:absolute;inset:0;width:100%;height:100%}
+@media (max-width:419px){.kq-logo{height:28px;width:91px}}
+.kq-logo .l-navy{animation:kqLogoNavy .28s cubic-bezier(.2,.8,.2,1) both}
+.kq-logo .l-iq{animation:kqLogoIQ .32s .16s cubic-bezier(.2,.8,.2,1) both}
+.kq-logo .l-dot{animation:kqLogoDot .56s .12s cubic-bezier(.3,.7,.4,1) both;transform-origin:25% 30%}
+@keyframes kqLogoNavy{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+@keyframes kqLogoDot{0%{opacity:0;transform:translateY(-150%)}40%{opacity:1;transform:translateY(0) scale(1.18,.8)}60%{transform:translateY(-28%) scale(.95,1.06)}80%{transform:translateY(0) scale(1.06,.94)}100%{opacity:1;transform:none}}
+@keyframes kqLogoIQ{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.kq-logo .l-navy,.kq-logo .l-iq,.kq-logo .l-dot{animation:none!important;opacity:1!important;transform:none!important}}
+.nav-links{display:flex;gap:4px;font-size:15px;font-weight:800;white-space:nowrap}
+.nav-links a{display:flex;align-items:center;min-height:44px;padding:0 14px;border-radius:8px;color:#14325f;transition:background .15s}
+.nav-links a:hover{background:#e8f1fb;color:#14325f}
+.nav-links a[aria-current="page"]{background:#14325f;color:#fff}
+.nav-links a[aria-current="page"]:hover{background:#14325f;color:#fff}
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-join{display:flex;align-items:center;gap:8px;min-height:44px;background:#77ff45;color:#14325f;font-weight:900;font-size:15px;padding:0 16px;border-radius:8px;white-space:nowrap}
+.nav-join:hover{background:#5fe82f;color:#14325f}
+.nav-join.on-join{box-shadow:3px 3px 0 #14325f}
+.menu-btn{display:none;width:44px;height:44px;background:#e8f1fb;color:#14325f;border-radius:8px;align-items:center;justify-content:center;cursor:pointer;font-size:20px;font-weight:900;line-height:1}
+.menu-btn.open{background:#14325f;color:#fff}
+.mobile-menu{display:none;flex-direction:column;background:#fff5ed;padding:8px clamp(16px,4vw,48px) 20px;gap:4px;box-shadow:0 18px 30px -18px rgba(20,50,95,.4)}
+.mobile-menu.open{display:flex}
+.mobile-menu a{display:flex;align-items:center;justify-content:space-between;min-height:52px;padding:0 14px;border-radius:8px;font-weight:800;font-size:18px;color:#14325f}
+.mobile-menu a[aria-current="page"]{background:#14325f;color:#fff}
+.mobile-menu a .sub{font-size:13px;font-weight:600;opacity:.75;display:block}
+.mobile-menu .mark{font-size:13px;font-weight:800}
+.mobile-menu .btn-green{margin-top:10px;justify-content:space-between}
+.mobile-note{font-size:13px;font-weight:700;color:#3d5577;padding:4px 2px 0}
+@media (max-width:1079px){
+  .nav-links{display:none}
+  .menu-btn{display:flex}
+}
+
+/* Footer */
+.pilot-band{padding:clamp(48px,6vw,80px) 0}
+.pilot-band .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:24px 48px}
+footer{background:#14325f;color:#d6e1f0}
+footer .wrap{padding:44px clamp(20px,4vw,48px) 36px;display:flex;flex-direction:column;gap:28px}
+.foot-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px 40px}
+.foot-brand{display:flex;flex-direction:column;gap:10px}
+.foot-nav{display:grid;grid-template-columns:repeat(2,minmax(140px,auto));gap:10px 36px;font-size:15px;font-weight:800}
+.foot-nav a{color:#fff}
+.foot-nav a:hover{color:#77ff45}
+.foot-nav a.accent{color:#77ff45}
+.foot-nav a.accent:hover{color:#fff}
+.foot-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 24px;padding-top:18px;font-size:13px;font-weight:600;color:#b9c9e0}
+
+/* Phone placeholder mockup */
+.phone{background:#0b1a33;border-radius:22px;box-shadow:0 30px 60px -24px rgba(11,26,51,.6),inset 0 0 0 1.5px rgba(255,255,255,.1);display:flex;flex-direction:column;overflow:hidden;flex:none}
+.phone .screen{background:#fff5ec;border-radius:18px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:14px;color:#3d5577}
+.phone .screen .tag{font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#2575bf}
+.phone .screen .icon{width:38%;aspect-ratio:1;border-radius:50%;background:#2575bf;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.4em}
+.phone .screen .cap{font-size:13px;font-weight:800;color:#14325f;line-height:1.3}
+
+/* Forms */
+.field{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:900}
+.field input,.field select{min-height:50px;padding:0 14px;border-radius:8px;font-size:16px;font-weight:600;color:#14325f;background:#fff5ed;width:100%}
+.field-dark input,.field-dark select{background:#fff5ed}
+</style>
+
+</head>
+<body>
+<header>
+<div class="nav-inner">
+<a class="nav-logo" href="index.html" aria-label="KinetIQ home"><span class="kq-logo" style="height:32px;width:104px" role="img" aria-label="KinetIQ">
+<img class="l-navy" src="assets/logo-layer-navy.png" alt="">
+<img class="l-iq" src="assets/logo-layer-iq.png" alt="">
+<img class="l-dot" src="assets/logo-layer-dot.png" alt="">
+</span></a>
+<nav class="nav-links" aria-label="Main"><a href="index.html">Home</a><a href="parents.html">For Parents</a><a href="coaches.html">For Coaches</a><a href="curriculum.html">Curriculum</a><a href="about.html">About</a></nav>
+<div class="nav-right">
+<a class="nav-join on-join" href="join.html">Join Early Access<span aria-hidden="true">&rarr;</span></a>
+<button class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false" onclick="kqToggleMenu()">&#8801;</button>
+</div>
+</div>
+<nav class="mobile-menu" id="mobileMenu" aria-label="Main">
+<a href="index.html">Home<span class="mark">&rarr;</span></a><a href="parents.html"><span>For Parents<span class="sub">At home with Coach Char</span></span><span class="mark">&rarr;</span></a><a href="coaches.html"><span>For Coaches<span class="sub">Groups with the Coach App</span></span><span class="mark">&rarr;</span></a><a href="curriculum.html"><span>Curriculum<span class="sub">The method and the pathway</span></span><span class="mark">&rarr;</span></a><a href="about.html"><span>About<span class="sub">Why we built KinetIQ</span></span><span class="mark">&rarr;</span></a>
+<a class="btn btn-green" href="join.html">Join Early Access<span aria-hidden="true">&rarr;</span></a>
+<span class="mobile-note">Class 1A &amp; 1B are being prepared for a small parent pilot.</span>
+</nav>
+</header>
+
+<style>
+.join-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(32px,5vw,72px);align-items:start}
+</style>
+<section style="flex:1">
+<div class="wrap join-grid">
+<div style="display:flex;flex-direction:column;gap:18px">
+<span style="display:inline-flex;align-self:flex-start;align-items:center;gap:8px;background:#14325f;color:#fff;font-size:13px;font-weight:800;letter-spacing:.04em;padding:7px 12px 7px 10px;border-radius:6px"><span style="width:8px;height:8px;border-radius:50%;background:#77ff45"></span>Early access &middot; Founding families</span>
+<h1 style="font-size:clamp(40px,5.6vw,68px);line-height:1.02">Be one of the first KinetIQ families.</h1>
+<p style="margin:0;font-size:19px;line-height:1.55;color:#3d5577">We&rsquo;re inviting a small group of parents and kids to test our first classes, share feedback and help shape the KinetIQ experience.</p>
+<div style="display:flex;flex-direction:column;border-radius:10px;overflow:hidden;background:#fff"><div style="display:grid;grid-template-columns:36px minmax(0,1fr);gap:10px;padding:14px 18px"><span style="font-size:14px;font-weight:900;color:#2575bf">01</span><span style="font-size:16px;font-weight:700;line-height:1.45">Try Class 1A &amp; 1B with your child before anyone else.</span></div><div style="display:grid;grid-template-columns:36px minmax(0,1fr);gap:10px;padding:14px 18px"><span style="font-size:14px;font-weight:900;color:#2575bf">02</span><span style="font-size:16px;font-weight:700;line-height:1.45">Tell us what worked and what didn&rsquo;t. We read every reply.</span></div><div style="display:grid;grid-template-columns:36px minmax(0,1fr);gap:10px;padding:14px 18px"><span style="font-size:14px;font-weight:900;color:#2575bf">03</span><span style="font-size:16px;font-weight:700;line-height:1.45">Help shape the rest of Module 1.</span></div></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px">
+<form id="joinForm" onsubmit="return kqSubmitJoin(event)" style="display:flex;flex-direction:column;gap:14px;background:#fff;border-radius:12px;padding:clamp(20px,2.6vw,30px);box-shadow:6px 6px 0 #14325f">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><b style="font-size:22px;font-weight:900">Become a Founding Family</b><span style="font-size:13px;font-weight:700;color:#3d5577">Takes 30 seconds.</span></div>
+<label class="field">Parent first name<input required name="first" autocomplete="given-name"></label>
+<label class="field">Email<input required type="email" name="email" autocomplete="email"></label>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+<label class="field">Child age<select required name="age"><option value="">Select age</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></label>
+<label class="field">ZIP code<input required name="zip" inputmode="numeric" autocomplete="postal-code"></label>
+</div>
+<button type="submit" class="btn btn-green" style="margin-top:4px">Join Early Access<span aria-hidden="true">&rarr;</span></button>
+<div id="joinStatus" style="font-size:13px;font-weight:600;color:#3d5577;min-height:16px">ZIP helps us plan the pilot. No spam, ever.</div>
+</form>
+<div id="joinDone" role="status" hidden style="display:flex;flex-direction:column;gap:12px;background:#e8f1fb;border-radius:12px;padding:clamp(22px,3vw,34px);box-shadow:6px 6px 0 #2575bf">
+<b style="font-size:30px;font-weight:900;letter-spacing:-0.02em">You&rsquo;re a Founding Family.</b>
+<span style="font-size:17px;font-weight:600;line-height:1.5">We&rsquo;ll email you when Class 1A &amp; 1B are ready to try. Coach Char says: &ldquo;See you soon, KinetIQ Kid!&rdquo;</span>
+</div>
+<p style="margin:0;font-size:15px;font-weight:700;color:#3d5577">Bringing KinetIQ to a school, program or gym? <a href="coaches.html#partner" style="color:#14325f;text-decoration:underline">Partner with KinetIQ</a></p>
+</div>
+</div>
+</section>
+<script>
+async function kqSubmitJoin(e){
+  e.preventDefault();
+  const f = e.target, status = document.getElementById('joinStatus');
+  const data = Object.fromEntries(new FormData(f).entries());
+  status.textContent = 'Sending...'; status.style.color = '#3d5577';
+  try {
+    const res = await fetch('/api/join', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)});
+    if(!res.ok) throw new Error('failed');
+    f.hidden = true; document.getElementById('joinDone').hidden = false;
+  } catch(err){
+    status.textContent = 'Something went wrong. Please try again.'; status.style.color = '#c0392b';
+  }
+  return false;
+}
+</script>
+
+<footer>
+<div class="wrap">
+<div class="foot-top">
+<div class="foot-brand">
+<img src="assets/logo-white.png" alt="KinetIQ" style="height:30px;width:auto">
+<span style="font-size:15px;font-weight:700">Movement Literacy for Dynamic Kids.</span>
+</div>
+<nav class="foot-nav" aria-label="Footer">
+<a href="index.html">Home</a>
+<a href="curriculum.html">Curriculum</a>
+<a href="parents.html">For Parents</a>
+<a href="about.html">About</a>
+<a href="coaches.html">For Coaches</a>
+<a class="accent" href="join.html">Join Early Access</a>
+</nav>
+</div>
+<div class="foot-bottom">
+<span>App screens and progress data shown are illustrative mockups, not real customer results.</span>
+<span>&copy; 2026 KinetIQ &middot; Privacy</span>
+</div>
+</div>
+</footer>
+<script>
+function kqToggleMenu(){
+  const m=document.getElementById('mobileMenu'), b=document.getElementById('menuBtn');
+  const open = !m.classList.contains('open');
+  m.classList.toggle('open', open);
+  b.classList.toggle('open', open);
+  b.setAttribute('aria-expanded', open ? 'true':'false');
+  b.innerHTML = open ? '&times;' : '&#8801;';
+}
+try{ if(sessionStorage.getItem('kqLogoPlayed')){ document.querySelectorAll('.kq-logo img').forEach(i=>i.style.animation='none'); } else { sessionStorage.setItem('kqLogoPlayed','1'); } }catch(e){}
+</script>
+</body>
+</html>

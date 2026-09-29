@@ -11,3 +11,8 @@ database_id = "6dd652fd-207b-4445-ae43-db0b1d4f3984"
 binding = "STUDENT_TRACKER_DB"
 database_name = "kinetiq-student-tracker"
 database_id = "f8742e87-d1c4-453b-bd3d-69c834c5741f"
+
+[[d1_databases]]
+binding = "SITE_LEADS_DB"
+database_name = "kinetiq-site-leads"
+database_id = "ed79ab6e-511f-409a-9c2b-a8508515d1ab"

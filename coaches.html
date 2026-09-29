@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>For Coaches · KinetIQ</title>
+<meta name="description" content="We build the class, you lead the kids. The Coach App gives teachers, rec staff and caregivers everything they need to lead KinetIQ classes.">
+<meta property="og:title" content="For Coaches · KinetIQ">
+<meta property="og:description" content="We build the class, you lead the kids. The Coach App gives teachers, rec staff and caregivers everything they need to lead KinetIQ classes.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/logo-mark.png">
+<meta name="theme-color" content="#14325f">
+<link rel="icon" href="assets/logo-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800;6..12,900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#fff5ed;color:#14325f;font-family:'Nunito Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select{border:0;font-family:inherit}
+a{color:#2575bf;text-decoration:none}
+a:hover{color:#14325f}
+::selection{background:#77ff45;color:#14325f}
+:focus-visible{outline:3px solid #2575bf;outline-offset:3px}
+img{max-width:100%;display:block}
+.wrap{max-width:1240px;margin:0 auto;padding:0 clamp(20px,4vw,48px)}
+section{padding:clamp(56px,8vw,104px) 0}
+h1,h2{margin:0;font-weight:900;letter-spacing:-0.03em}
+.eyebrow{font-size:13px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#2575bf}
+.eyebrow.on-navy{color:#8cc4f5}
+.btn{display:inline-flex;align-items:center;justify-content:space-between;gap:14px;min-height:56px;font-weight:900;font-size:17px;padding:0 20px;border-radius:8px;cursor:pointer;transition:transform .15s,background .15s,box-shadow .15s}
+.btn:hover{transform:translate(-2px,-2px)}
+.btn-green{background:#77ff45;color:#14325f;box-shadow:4px 4px 0 #2575bf}
+.btn-green:hover{background:#5fe82f;color:#14325f;box-shadow:6px 6px 0 #2575bf}
+.btn-navy{background:#14325f;color:#fff;box-shadow:4px 4px 0 #2575bf}
+.btn-navy:hover{background:#0f2749;color:#fff;box-shadow:6px 6px 0 #2575bf}
+.btn-soft{background:#e8f1fb;color:#14325f}
+.btn-soft:hover{background:#d3e5f7;color:#14325f}
+.btn-soft-dark{background:rgba(255,255,255,.14);color:#fff}
+.btn-soft-dark:hover{background:#fff;color:#14325f}
+.card{border-radius:12px}
+.pattern-bg{background:linear-gradient(rgba(255,255,255,.9),rgba(255,255,255,.9)),url(assets/pattern.png) center/520px repeat}
+.pattern-bg-cream{background:linear-gradient(rgba(255,245,237,.9),rgba(255,245,237,.9)),url(assets/pattern.png) center/520px repeat}
+.grid-fit{display:grid;gap:16px}
+
+/* Header */
+header{position:sticky;top:0;z-index:50;background:rgba(255,245,237,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.nav-inner{max-width:1240px;margin:0 auto;padding:0 clamp(16px,4vw,48px);height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.nav-logo{display:flex;align-items:center;flex:none}
+.kq-logo{position:relative;display:block;height:32px;width:104px}
+.kq-logo img{position:absolute;inset:0;width:100%;height:100%}
+@media (max-width:419px){.kq-logo{height:28px;width:91px}}
+.kq-logo .l-navy{animation:kqLogoNavy .28s cubic-bezier(.2,.8,.2,1) both}
+.kq-logo .l-iq{animation:kqLogoIQ .32s .16s cubic-bezier(.2,.8,.2,1) both}
+.kq-logo .l-dot{animation:kqLogoDot .56s .12s cubic-bezier(.3,.7,.4,1) both;transform-origin:25% 30%}
+@keyframes kqLogoNavy{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+@keyframes kqLogoDot{0%{opacity:0;transform:translateY(-150%)}40%{opacity:1;transform:translateY(0) scale(1.18,.8)}60%{transform:translateY(-28%) scale(.95,1.06)}80%{transform:translateY(0) scale(1.06,.94)}100%{opacity:1;transform:none}}
+@keyframes kqLogoIQ{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.kq-logo .l-navy,.kq-logo .l-iq,.kq-logo .l-dot{animation:none!important;opacity:1!important;transform:none!important}}
+.nav-links{display:flex;gap:4px;font-size:15px;font-weight:800;white-space:nowrap}
+.nav-links a{display:flex;align-items:center;min-height:44px;padding:0 14px;border-radius:8px;color:#14325f;transition:background .15s}
+.nav-links a:hover{background:#e8f1fb;color:#14325f}
+.nav-links a[aria-current="page"]{background:#14325f;color:#fff}
+.nav-links a[aria-current="page"]:hover{background:#14325f;color:#fff}
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-join{display:flex;align-items:center;gap:8px;min-height:44px;background:#77ff45;color:#14325f;font-weight:900;font-size:15px;padding:0 16px;border-radius:8px;white-space:nowrap}
+.nav-join:hover{background:#5fe82f;color:#14325f}
+.nav-join.on-join{box-shadow:3px 3px 0 #14325f}
+.menu-btn{display:none;width:44px;height:44px;background:#e8f1fb;color:#14325f;border-radius:8px;align-items:center;justify-content:center;cursor:pointer;font-size:20px;font-weight:900;line-height:1}
+.menu-btn.open{background:#14325f;color:#fff}
+.mobile-menu{display:none;flex-direction:column;background:#fff5ed;padding:8px clamp(16px,4vw,48px) 20px;gap:4px;box-shadow:0 18px 30px -18px rgba(20,50,95,.4)}
+.mobile-menu.open{display:flex}
+.mobile-menu a{display:flex;align-items:center;justify-content:space-between;min-height:52px;padding:0 14px;border-radius:8px;font-weight:800;font-size:18px;color:#14325f}
+.mobile-menu a[aria-current="page"]{background:#14325f;color:#fff}
+.mobile-menu a .sub{font-size:13px;font-weight:600;opacity:.75;display:block}
+.mobile-menu .mark{font-size:13px;font-weight:800}
+.mobile-menu .btn-green{margin-top:10px;justify-content:space-between}
+.mobile-note{font-size:13px;font-weight:700;color:#3d5577;padding:4px 2px 0}
+@media (max-width:1079px){
+  .nav-links{display:none}
+  .menu-btn{display:flex}
+}
+
+/* Footer */
+.pilot-band{padding:clamp(48px,6vw,80px) 0}
+.pilot-band .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:24px 48px}
+footer{background:#14325f;color:#d6e1f0}
+footer .wrap{padding:44px clamp(20px,4vw,48px) 36px;display:flex;flex-direction:column;gap:28px}
+.foot-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px 40px}
+.foot-brand{display:flex;flex-direction:column;gap:10px}
+.foot-nav{display:grid;grid-template-columns:repeat(2,minmax(140px,auto));gap:10px 36px;font-size:15px;font-weight:800}
+.foot-nav a{color:#fff}
+.foot-nav a:hover{color:#77ff45}
+.foot-nav a.accent{color:#77ff45}
+.foot-nav a.accent:hover{color:#fff}
+.foot-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 24px;padding-top:18px;font-size:13px;font-weight:600;color:#b9c9e0}
+
+/* Phone placeholder mockup */
+.phone{background:#0b1a33;border-radius:22px;box-shadow:0 30px 60px -24px rgba(11,26,51,.6),inset 0 0 0 1.5px rgba(255,255,255,.1);display:flex;flex-direction:column;overflow:hidden;flex:none}
+.phone .screen{background:#fff5ec;border-radius:18px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:14px;color:#3d5577}
+.phone .screen .tag{font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#2575bf}
+.phone .screen .icon{width:38%;aspect-ratio:1;border-radius:50%;background:#2575bf;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.4em}
+.phone .screen .cap{font-size:13px;font-weight:800;color:#14325f;line-height:1.3}
+
+/* Forms */
+.field{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:900}
+.field input,.field select{min-height:50px;padding:0 14px;border-radius:8px;font-size:16px;font-weight:600;color:#14325f;background:#fff5ed;width:100%}
+.field-dark input,.field-dark select{background:#fff5ed}
+</style>
+
+</head>
+<body>
+<header>
+<div class="nav-inner">
+<a class="nav-logo" href="index.html" aria-label="KinetIQ home"><span class="kq-logo" style="height:32px;width:104px" role="img" aria-label="KinetIQ">
+<img class="l-navy" src="assets/logo-layer-navy.png" alt="">
+<img class="l-iq" src="assets/logo-layer-iq.png" alt="">
+<img class="l-dot" src="assets/logo-layer-dot.png" alt="">
+</span></a>
+<nav class="nav-links" aria-label="Main"><a href="index.html">Home</a><a href="parents.html">For Parents</a><a href="coaches.html" aria-current="page">For Coaches</a><a href="curriculum.html">Curriculum</a><a href="about.html">About</a></nav>
+<div class="nav-right">
+<a class="nav-join" href="join.html">Join Early Access<span aria-hidden="true">&rarr;</span></a>
+<button class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false" onclick="kqToggleMenu()">&#8801;</button>
+</div>
+</div>
+<nav class="mobile-menu" id="mobileMenu" aria-label="Main">
+<a href="index.html">Home<span class="mark">&rarr;</span></a><a href="parents.html"><span>For Parents<span class="sub">At home with Coach Char</span></span><span class="mark">&rarr;</span></a><a href="coaches.html" aria-current="page"><span>For Coaches<span class="sub">Groups with the Coach App</span></span><span class="mark">You are here</span></a><a href="curriculum.html"><span>Curriculum<span class="sub">The method and the pathway</span></span><span class="mark">&rarr;</span></a><a href="about.html"><span>About<span class="sub">Why we built KinetIQ</span></span><span class="mark">&rarr;</span></a>
+<a class="btn btn-green" href="join.html">Join Early Access<span aria-hidden="true">&rarr;</span></a>
+<span class="mobile-note">Class 1A &amp; 1B are being prepared for a small parent pilot.</span>
+</nav>
+</header>
+
+<style>
+.coaches-hero .wrap{padding:clamp(40px,6vw,88px) clamp(20px,4vw,48px) clamp(56px,7vw,96px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:clamp(40px,5vw,72px);align-items:center}
+.workflow-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px}
+.provide-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:16px}
+.who-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px}
+.partner-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(32px,5vw,64px);align-items:start}
+</style>
+
+<section class="coaches-hero" style="background:#fff5ed;color:#14325f">
+<div class="wrap">
+<div style="display:flex;flex-direction:column;gap:22px;align-items:flex-start">
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<span style="font-size:13px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;background:#2575bf;color:#fff;padding:6px 10px;border-radius:6px">With a coach &middot; Coach App</span>
+<span style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;padding:4px 10px;border-radius:6px"><span style="width:7px;height:7px;border-radius:50%;background:#ff8a3d"></span>In development</span>
+</div>
+<h1 style="font-size:clamp(42px,6vw,76px);line-height:1.02">We build the class. You lead the kids.</h1>
+<p style="margin:0;font-size:clamp(17px,1.5vw,20px);line-height:1.55;color:#3d5577;max-width:540px">No fitness background required. Every class comes with demonstrations, coaching cues, timers, progressions and step-by-step instructions.</p>
+<div style="display:flex;flex-wrap:wrap;gap:12px">
+<a class="btn btn-navy" href="#partner" style="min-width:230px">Partner with KinetIQ<span aria-hidden="true">&rarr;</span></a>
+<a class="btn btn-soft" href="#workflow">See a class<span aria-hidden="true">&darr;</span></a>
+</div>
+<p style="margin:0;font-size:14px;font-weight:700;color:#3d5577;max-width:520px">If you can work with kids, KinetIQ can help you coach movement.</p>
+</div>
+<div style="display:flex;justify-content:center;gap:clamp(12px,2vw,24px);align-items:flex-end">
+<div class="phone" style="width:230px;height:498px;padding:7px">
+<div class="screen">
+<span class="icon">K</span>
+<span class="tag">coach dash</span>
+<span class="cap"></span>
+</div>
+</div>
+<div style="transform:translateY(-40px)"><div class="phone" style="width:230px;height:498px;padding:7px">
+<div class="screen">
+<span class="icon">K</span>
+<span class="tag">coach plan</span>
+<span class="cap"></span>
+</div>
+</div></div>
+</div>
+</div>
+</section>
+
+<section id="workflow" style="background:#14325f;color:#fff;scroll-margin-top:72px">
+<div class="wrap" style="display:flex;flex-direction:column;gap:clamp(28px,3.5vw,44px)">
+<div style="display:flex;flex-direction:column;gap:12px;max-width:760px">
+<span class="eyebrow on-navy">How coaching works</span>
+<h2 style="font-size:clamp(32px,4.2vw,52px);line-height:1.04">You don&rsquo;t have to know how to build a workout. We already did that part.</h2>
+<p style="margin:0;font-size:18px;line-height:1.55;color:#d6e1f0">Every class is designed to be followed step by step.</p>
+</div>
+<div class="workflow-grid"><div style="display:flex;flex-direction:column;border-radius:12px;overflow:hidden;background:#fff;color:#14325f">
+<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;background:#2575bf;color:#fff">
+<span style="width:34px;height:34px;border-radius:50%;background:#fff;color:#14325f;font-weight:900;display:flex;align-items:center;justify-content:center;flex:none">1</span>
+<span style="display:flex;flex-direction:column;gap:1px"><span style="font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;opacity:.8">Before class</span><b style="font-size:21px;font-weight:900">Open the Class</b></span>
+</div>
+<div style="padding:20px;display:flex;flex-direction:column;gap:14px;flex:1">
+<span style="font-size:16px;line-height:1.5;color:#3d5577">KinetIQ walks you through exactly what's happening that day.</span>
+<div style="display:flex;flex-direction:column;gap:7px"><span style="display:flex;gap:10px;align-items:baseline;font-size:15px;font-weight:800"><span style="width:8px;height:8px;border-radius:50%;background:#ff8a3d;flex:none;transform:translateY(-1px)"></span>Step-by-step class flow</span><span style="display:flex;gap:10px;align-items:baseline;font-size:15px;font-weight:800"><span style="width:8px;height:8px;border-radius:50%;background:#ff8a3d;flex:none;transform:translateY(-1px)"></span>Timing for every block</span><span style="display:flex;gap:10px;align-items:baseline;font-size:15px;font-weight:800"><span style="width:8px;height:8px;border-radius:50%;background:#ff8a3d;flex:none;transform:translateY(-1px)"></span>Lesson and vocabulary guide</span></div>
+<div style="margin-top:auto;padding-top:10px;display:flex;justify-content:center;background:#e8f1fb;border-radius:8px;overflow:hidden;height:220px"><div style="padding-top:18px"><div class="phone" style="width:170px;height:368px;padding:5px">
+<div class="screen">
+<span class="icon">K</span>
+<span class="tag">coach plan</span>
+<span class="cap"></span>
+</div>
+</div></div></div>
+</div></div><div style="display:flex;flex-direction:column;border-radius:12px;overflow:hidden;background:#fff;color:#14325f">
+<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;background:#2575bf;color:#fff">
+<span style="width:34px;height:34px;border-radius:50%;background:#fff;color:#14325f;font-weight:900;display:flex;align-items:center;justify-content:center;flex:none">2</span>
+<span style="display:flex;flex-direction:column;gap:1px"><span style="font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;opacity:.8">During class</span><b style="font-size:21px;font-weight:900">Follow the App</b></span>
+</div>
+<div style="padding:20px;display:flex;flex-direction:column;gap:14px;flex:1">
+<span style="font-size:16px;line-height:1.5;color:#3d5577">Watch the demonstration, read the coaching cues and lead the activity.</span>
+<div style="display:flex;flex-direction:column;gap:7px"><span style="display:flex;gap:10px;align-items:baseline;font-size:15px;font-weight:800"><span style="width:8px;height:8px;border-radius:50%;background:#ff8a3d;flex:none;transform:translateY(-1px)"></span>Exercise demonstrations</span><span style="display:flex;gap:10px;align-items:baseline;font-size:15px;font-weight:800"><span style="width:8px;height:8px;border-radius:50%;background:#ff8a3d;flex:none;transform:translateY(-1px)"></span>Coaching cues and form reminders</span><span style="display:flex;gap:10px;align-items:baseline;font-size:15px;font-weight:800"><span style="width:8px;height:8px;border-radius:50%;background:#ff8a3d;flex:none;transform:translateY(-1px)"></span>Timers and rep guidance</span><span style="display:flex;gap:10px;align-items:baseline;font-size:15px;font-weight:800"><span style="width:8px;height:8px;border-radius:50%;background:#ff8a3d;flex:none;transform:translateY(-1px)"></span>Easier and harder options</span></div>
+<div style="margin-top:auto;padding-top:10px;display:flex;justify-content:center;background:#e8f1fb;border-radius:8px;overflow:hidden;height:220px"><div style="padding-top:18px"><div class="phone" style="width:170px;height:368px;padding:5px">
+<div class="screen">
+<span class="icon">K</span>
+<span class="tag">class</span>
+<span class="cap"></span>
+</div>
+</div></div></div>
+</div></div><div style="display:flex;flex-direction:column;border-radius:12px;overflow:hidden;background:#fff;color:#14325f">
+<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;background:#2575bf;color:#fff">
+<span style="width:34px;height:34px;border-radius:50%;background:#fff;color:#14325f;font-weight:900;display:flex;align-items:center;justify-content:center;flex:none">3</span>
+<span style="display:flex;flex-direction:column;gap:1px"><span style="font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;opacity:.8">With every kid</span><b style="font-size:21px;font-weight:900">Coach the Kid</b></span>
+</div>
+<div style="padding:20px;display:flex;flex-direction:column;gap:14px;flex:1">
+<span style="font-size:16px;line-height:1.5;color:#3d5577">Encourage effort, reinforce good movement and record progress.</span>
+<div style="display:flex;flex-direction:column;gap:7px"><span style="display:flex;gap:10px;align-items:baseline;font-size:15px;font-weight:800"><span style="width:8px;height:8px;border-radius:50%;background:#ff8a3d;flex:none;transform:translateY(-1px)"></span>Built-in assessments</span><span style="display:flex;gap:10px;align-items:baseline;font-size:15px;font-weight:800"><span style="width:8px;height:8px;border-radius:50%;background:#ff8a3d;flex:none;transform:translateY(-1px)"></span>Progress tracking</span><span style="display:flex;gap:10px;align-items:baseline;font-size:15px;font-weight:800"><span style="width:8px;height:8px;border-radius:50%;background:#ff8a3d;flex:none;transform:translateY(-1px)"></span>Reports shared with families</span></div>
+<div style="margin-top:auto;padding-top:10px;display:flex;justify-content:center;background:#e8f1fb;border-radius:8px;overflow:hidden;height:220px"><div style="padding-top:18px"><div class="phone" style="width:170px;height:368px;padding:5px">
+<div class="screen">
+<span class="icon">K</span>
+<span class="tag">coach student</span>
+<span class="cap"></span>
+</div>
+</div></div></div>
+</div></div></div>
+<p style="margin:0;font-size:13px;font-weight:700;color:#b9c9e0">Illustrative Coach App screens. Features shown are in development.</p>
+</div>
+</section>
+
+<section style="background:#fff">
+<div class="wrap provide-grid">
+<div style="display:flex;flex-direction:column;gap:14px;padding:clamp(24px,3vw,40px);background:#14325f;color:#fff;border-radius:12px">
+<span class="eyebrow on-navy">KinetIQ provides</span>
+<b style="font-size:clamp(26px,3vw,36px);line-height:1.1;font-weight:900;letter-spacing:-0.02em">The expertise and the structure.</b>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"><span style="padding:9px 13px;border-radius:6px;background:rgba(255,255,255,.1);font-weight:800;font-size:15px">Class plan</span><span style="padding:9px 13px;border-radius:6px;background:rgba(255,255,255,.1);font-weight:800;font-size:15px">Demonstrations</span><span style="padding:9px 13px;border-radius:6px;background:rgba(255,255,255,.1);font-weight:800;font-size:15px">Coaching cues</span><span style="padding:9px 13px;border-radius:6px;background:rgba(255,255,255,.1);font-weight:800;font-size:15px">Timing</span><span style="padding:9px 13px;border-radius:6px;background:rgba(255,255,255,.1);font-weight:800;font-size:15px">Progressions</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px;padding:clamp(24px,3vw,40px);background:#2575bf;color:#fff;border-radius:12px">
+<span class="eyebrow" style="color:#fff">You provide</span>
+<b style="font-size:clamp(26px,3vw,36px);line-height:1.1;font-weight:900;letter-spacing:-0.02em">The relationship with the kid.</b>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"><span style="padding:9px 13px;border-radius:6px;background:#fff;color:#14325f;font-weight:800;font-size:15px">Supervision</span><span style="padding:9px 13px;border-radius:6px;background:#fff;color:#14325f;font-weight:800;font-size:15px">Encouragement</span><span style="padding:9px 13px;border-radius:6px;background:#fff;color:#14325f;font-weight:800;font-size:15px">Good judgment</span><span style="padding:9px 13px;border-radius:6px;background:#fff;color:#14325f;font-weight:800;font-size:15px">Connection</span></div>
+</div>
+</div>
+</section>
+
+<section style="background:#fff5ed">
+<div class="wrap" style="display:flex;flex-direction:column;gap:clamp(28px,3.5vw,40px)">
+<div style="display:flex;flex-direction:column;gap:12px;max-width:760px">
+<span class="eyebrow">Who coaches KinetIQ</span>
+<h2 style="font-size:clamp(32px,4.2vw,52px);line-height:1.04">Built for the adults kids already trust.</h2>
+<p style="margin:0;font-size:18px;line-height:1.55;color:#3d5577">They already have the most important part: a relationship with the kids. KinetIQ brings the curriculum, the instruction and the tools.</p>
+</div>
+<div class="who-grid"><div style="display:flex;flex-direction:column;gap:10px;border-radius:10px;background:#fff;padding:22px"><b style="font-size:20px;font-weight:900">Teachers</b><span style="font-size:15px;line-height:1.5;color:#3d5577">Bring structured movement into classrooms and school programs without designing workouts.</span></div><div style="display:flex;flex-direction:column;gap:10px;border-radius:10px;background:#fff;padding:22px"><b style="font-size:20px;font-weight:900">After-school staff</b><span style="font-size:15px;line-height:1.5;color:#3d5577">Give staff a repeatable physical-literacy curriculum they can lead with confidence.</span></div><div style="display:flex;flex-direction:column;gap:10px;border-radius:10px;background:#fff;padding:22px"><b style="font-size:20px;font-weight:900">Youth &amp; rec coaches</b><span style="font-size:15px;line-height:1.5;color:#3d5577">Build the fundamental movement skills that carry into every sport and activity.</span></div><div style="display:flex;flex-direction:column;gap:10px;border-radius:10px;background:#fff;padding:22px"><b style="font-size:20px;font-weight:900">Parents &amp; caregivers</b><span style="font-size:15px;line-height:1.5;color:#3d5577">Follow a structured program with a group of kids, without needing to know how to program exercise.</span></div></div>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding-top:20px">
+<span style="font-size:13px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-right:6px">Also led by</span><span style="padding:7px 12px;border-radius:6px;font-weight:800;font-size:14px;background:#fff">PE teachers</span><span style="padding:7px 12px;border-radius:6px;font-weight:800;font-size:14px;background:#fff">Camp counselors</span><span style="padding:7px 12px;border-radius:6px;font-weight:800;font-size:14px;background:#fff">Nannies &amp; babysitters</span><span style="padding:7px 12px;border-radius:6px;font-weight:800;font-size:14px;background:#fff">Childcare staff</span><span style="padding:7px 12px;border-radius:6px;font-weight:800;font-size:14px;background:#fff">Community program leaders</span>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:16px;margin-top:8px">
+<div style="display:flex;flex-direction:column;gap:12px;background:#14325f;color:#fff;border-radius:12px;padding:clamp(22px,3vw,34px)">
+<b style="font-size:clamp(24px,2.8vw,34px);line-height:1.12;font-weight:900;letter-spacing:-0.02em">Great movement coaching shouldn&rsquo;t depend on having a fitness professional in every room.</b>
+<span style="font-size:16px;line-height:1.5;color:#d6e1f0">KinetIQ puts the curriculum, instruction and tools into the hands of the adults kids already know and trust.</span>
+</div>
+<div class="pattern-bg" style="display:flex;flex-direction:column;gap:14px;border-radius:12px;padding:clamp(22px,3vw,34px)">
+<span class="eyebrow">Wherever kids already are</span>
+<div style="display:flex;flex-wrap:wrap;gap:8px"><span style="padding:8px 12px;border-radius:6px;background:#14325f;color:#fff;font-weight:800;font-size:14px">Homes</span><span style="padding:8px 12px;border-radius:6px;background:#14325f;color:#fff;font-weight:800;font-size:14px">Schools</span><span style="padding:8px 12px;border-radius:6px;background:#14325f;color:#fff;font-weight:800;font-size:14px">After-school programs</span><span style="padding:8px 12px;border-radius:6px;background:#14325f;color:#fff;font-weight:800;font-size:14px">Recreation centers</span><span style="padding:8px 12px;border-radius:6px;background:#14325f;color:#fff;font-weight:800;font-size:14px">Youth organizations</span><span style="padding:8px 12px;border-radius:6px;background:#14325f;color:#fff;font-weight:800;font-size:14px">Gyms</span><span style="padding:8px 12px;border-radius:6px;background:#14325f;color:#fff;font-weight:800;font-size:14px">Camps</span><span style="padding:8px 12px;border-radius:6px;background:#14325f;color:#fff;font-weight:800;font-size:14px">Community programs</span></div>
+<b style="font-size:17px;font-weight:900;margin-top:auto">Train the staff you already have. No specialized fitness hires needed.</b>
+</div>
+</div>
+</div>
+</section>
+
+<section id="partner" style="background:#14325f;color:#fff;scroll-margin-top:72px">
+<div class="wrap partner-grid">
+<div style="display:flex;flex-direction:column;gap:14px">
+<span class="eyebrow on-navy">For organizations</span>
+<h2 style="font-size:clamp(32px,4.2vw,52px);line-height:1.04">Partner with KinetIQ.</h2>
+<p style="margin:0;font-size:18px;font-weight:600;line-height:1.55;color:#d6e1f0">Bringing KinetIQ to a school, program or gym? Your existing staff can lead it. Tell us about your program and we&rsquo;ll be in touch as the Coach App gets closer.</p>
+<p style="margin:0;font-size:15px;font-weight:700">Signing up as a family? <a href="join.html" style="color:#fff;text-decoration:underline">Join early access here</a>.</p>
+</div>
+<div>
+<form id="partnerForm" onsubmit="return kqSubmitPartner(event)" style="display:flex;flex-direction:column;gap:14px;background:#fff;border-radius:12px;padding:clamp(20px,2.6vw,30px);box-shadow:6px 6px 0 #2575bf;color:#14325f">
+<label class="field">Your name<input required name="name" autocomplete="name"></label>
+<label class="field">Organization<input required name="org" autocomplete="organization"></label>
+<label class="field">Work email<input required type="email" name="email" autocomplete="email"></label>
+<label class="field">Program type<select required name="type"><option value="">Select one</option><option value="School">School</option><option value="After-school program">After-school program</option><option value="Recreation center">Recreation center</option><option value="Youth sports">Youth sports</option><option value="Camp">Camp</option><option value="Childcare">Childcare</option><option value="Other">Other</option></select></label>
+<button type="submit" class="btn btn-navy" style="margin-top:4px">Send partner inquiry<span aria-hidden="true">&rarr;</span></button>
+<div id="partnerStatus" style="font-size:13px;font-weight:700;min-height:16px"></div>
+</form>
+<div id="partnerDone" role="status" hidden style="display:flex;flex-direction:column;gap:10px;background:#fff;border-radius:12px;padding:30px;box-shadow:6px 6px 0 #2575bf;color:#14325f">
+<b style="font-size:26px;font-weight:900">Thanks. We&rsquo;ll be in touch.</b>
+<span style="font-size:16px;line-height:1.5;color:#3d5577">We&rsquo;ll reach out as the Coach App gets ready for partner programs.</span>
+</div>
+</div>
+</div>
+</section>
+
+<script>
+async function kqSubmitPartner(e){
+  e.preventDefault();
+  const f = e.target, status = document.getElementById('partnerStatus');
+  const data = Object.fromEntries(new FormData(f).entries());
+  status.textContent = 'Sending...'; status.style.color = '#3d5577';
+  try {
+    const res = await fetch('/api/partner', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)});
+    if(!res.ok) throw new Error('failed');
+    f.hidden = true; document.getElementById('partnerDone').hidden = false;
+  } catch(err){
+    status.textContent = 'Something went wrong. Please try again.'; status.style.color = '#c0392b';
+  }
+  return false;
+}
+</script>
+
+<footer>
+<div class="wrap">
+<div class="foot-top">
+<div class="foot-brand">
+<img src="assets/logo-white.png" alt="KinetIQ" style="height:30px;width:auto">
+<span style="font-size:15px;font-weight:700">Movement Literacy for Dynamic Kids.</span>
+</div>
+<nav class="foot-nav" aria-label="Footer">
+<a href="index.html">Home</a>
+<a href="curriculum.html">Curriculum</a>
+<a href="parents.html">For Parents</a>
+<a href="about.html">About</a>
+<a href="coaches.html">For Coaches</a>
+<a class="accent" href="join.html">Join Early Access</a>
+</nav>
+</div>
+<div class="foot-bottom">
+<span>App screens and progress data shown are illustrative mockups, not real customer results.</span>
+<span>&copy; 2026 KinetIQ &middot; Privacy</span>
+</div>
+</div>
+</footer>
+<script>
+function kqToggleMenu(){
+  const m=document.getElementById('mobileMenu'), b=document.getElementById('menuBtn');
+  const open = !m.classList.contains('open');
+  m.classList.toggle('open', open);
+  b.classList.toggle('open', open);
+  b.setAttribute('aria-expanded', open ? 'true':'false');
+  b.innerHTML = open ? '&times;' : '&#8801;';
+}
+try{ if(sessionStorage.getItem('kqLogoPlayed')){ document.querySelectorAll('.kq-logo img').forEach(i=>i.style.animation='none'); } else { sessionStorage.setItem('kqLogoPlayed','1'); } }catch(e){}
+</script>
+</body>
+</html>
